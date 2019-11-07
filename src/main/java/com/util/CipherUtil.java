@@ -1,7 +1,7 @@
 package com.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.util.TranscodeUtil;
+import sun.misc.BASE64Encoder;
 
 import javax.crypto.*;
 import javax.crypto.interfaces.DHPrivateKey;
@@ -28,11 +28,7 @@ import java.util.Random;
 
 
 public class CipherUtil {
-    private static Log logger = LogFactory.getLog(CipherUtil.class);
-    public static void main(String[] args) {
-        System.out.println(DESEncrypt("ZIguang888@999"));
-//		logger.info(DESDecrypt("ZIguang888@999"));
-    }
+
     /**
      * MD5算法
      */
@@ -166,7 +162,7 @@ public class CipherUtil {
             SecretKey secretKey = keyGenerator.generateKey();
             return TranscodeUtil.byteArrayToBase64Str(secretKey.getEncoded());
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -184,9 +180,9 @@ public class CipherUtil {
             mac.init(k);
             return TranscodeUtil.byteArrayToBase64Str(mac.doFinal(data.getBytes()));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -210,11 +206,13 @@ public class CipherUtil {
     public static String generateDESKey(String seed) {
         try {
             KeyGenerator kg = KeyGenerator.getInstance(ALGORITHM_DES);
-            kg.init(new SecureRandom(seed.getBytes()));
+            SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+            secureRandom.setSeed(seed.getBytes());
+            kg.init(56,secureRandom);
             SecretKey secretKey = kg.generateKey();
-            return TranscodeUtil.byteArrayToBase64Str(secretKey.getEncoded());
+            return  new BASE64Encoder().encode(secretKey.getEncoded());
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -246,11 +244,11 @@ public class CipherUtil {
     private static String DESCipher(String data, String key, int mode) {
         try {
             Key k = toKey(key,ALGORITHM_DES);
-            Cipher cipher = Cipher.getInstance(ALGORITHM_DES);
+            Cipher cipher = Cipher.getInstance("DES");
             cipher.init(mode, k);
             return mode == Cipher.DECRYPT_MODE?new String(cipher.doFinal(TranscodeUtil.base64StrToByteArray(data))):TranscodeUtil.byteArrayToBase64Str(cipher.doFinal(data.getBytes()));
         } catch (Exception e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -304,17 +302,17 @@ public class CipherUtil {
             cipher.init(mode, secretKey, paramSpec);
             return mode == Cipher.DECRYPT_MODE?new String(cipher.doFinal(TranscodeUtil.base64StrToByteArray(data))):TranscodeUtil.byteArrayToBase64Str(cipher.doFinal(data.getBytes()));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -331,9 +329,9 @@ public class CipherUtil {
             SecretKey secretKey = keyFactory.generateSecret(keySpec);
             return secretKey;
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -351,7 +349,7 @@ public class CipherUtil {
             SecretKey key = kgen.generateKey();
             return TranscodeUtil.byteArrayToBase64Str(key.getEncoded());
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -394,17 +392,17 @@ public class CipherUtil {
             ecipher.init(mode, k, paramSpec);
             return mode==Cipher.DECRYPT_MODE?new String(ecipher.doFinal(TranscodeUtil.base64StrToByteArray(data))):TranscodeUtil.byteArrayToBase64Str(ecipher.doFinal(data.getBytes()));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -431,13 +429,13 @@ public class CipherUtil {
             signature.update(TranscodeUtil.base64StrToByteArray(data));
             return TranscodeUtil.byteArrayToBase64Str(signature.sign());
         } catch(NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (SignatureException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -466,13 +464,13 @@ public class CipherUtil {
             // 验证签名是否正常
             return signature.verify(TranscodeUtil.base64StrToByteArray(sign));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (SignatureException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return false;
     }
@@ -496,17 +494,17 @@ public class CipherUtil {
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             return new String(cipher.doFinal(TranscodeUtil.base64StrToByteArray(data)));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -530,17 +528,17 @@ public class CipherUtil {
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
             return new String(cipher.doFinal(TranscodeUtil.base64StrToByteArray(data)));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -564,17 +562,17 @@ public class CipherUtil {
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return TranscodeUtil.byteArrayToBase64Str(cipher.doFinal(data.getBytes()));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -598,17 +596,17 @@ public class CipherUtil {
             cipher.init(Cipher.ENCRYPT_MODE, privateKey);
             return TranscodeUtil.byteArrayToBase64Str(cipher.doFinal(data.getBytes()));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -651,7 +649,7 @@ public class CipherUtil {
             keyMap.put(RSAPUBLIC_KEY, publicKey);
             keyMap.put(RSAPRIVATE_KEY, privateKey);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return keyMap;
     }
@@ -674,7 +672,7 @@ public class CipherUtil {
             keyMap.put(DHPRIVATE_KEY, privateKey);
             return keyMap;
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -705,11 +703,11 @@ public class CipherUtil {
             keyMap.put(DHPRIVATE_KEY, privateKey);
             return keyMap;
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -730,15 +728,15 @@ public class CipherUtil {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return TranscodeUtil.byteArrayToBase64Str(cipher.doFinal(data.getBytes()));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -759,15 +757,15 @@ public class CipherUtil {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return new String(cipher.doFinal(TranscodeUtil.base64StrToByteArray(data)));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -796,11 +794,11 @@ public class CipherUtil {
             SecretKey secretKey = keyAgree.generateSecret(SECRET_ALGORITHM);
             return secretKey;
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -838,11 +836,11 @@ public class CipherUtil {
             PrivateKey key = (PrivateKey) ks.getKey(alias, password.toCharArray());
             return key;
         } catch (UnrecoverableKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (KeyStoreException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -858,7 +856,7 @@ public class CipherUtil {
             PublicKey key = certificate.getPublicKey();
             return key;
         } catch (Exception e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -876,11 +874,11 @@ public class CipherUtil {
             in.close();
             return certificate;
         } catch (CertificateException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -898,7 +896,7 @@ public class CipherUtil {
             Certificate certificate = ks.getCertificate(alias);
             return certificate;
         } catch (KeyStoreException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -917,15 +915,15 @@ public class CipherUtil {
             is.close();
             return ks;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (KeyStoreException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (CertificateException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -948,15 +946,15 @@ public class CipherUtil {
             cipher.init(Cipher.ENCRYPT_MODE, privateKey);
             return TranscodeUtil.byteArrayToBase64Str(cipher.doFinal(data.getBytes()));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -978,15 +976,15 @@ public class CipherUtil {
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             return new String(cipher.doFinal(TranscodeUtil.base64StrToByteArray(data)));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -1006,15 +1004,15 @@ public class CipherUtil {
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return TranscodeUtil.byteArrayToBase64Str(cipher.doFinal(data.getBytes()));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -1034,15 +1032,15 @@ public class CipherUtil {
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
             return new String(cipher.doFinal(TranscodeUtil.base64StrToByteArray(data)));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -1117,15 +1115,15 @@ public class CipherUtil {
             signature.update(TranscodeUtil.base64StrToByteArray(sign));
             return TranscodeUtil.byteArrayToBase64Str(signature.sign());
         } catch (UnrecoverableKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (KeyStoreException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (SignatureException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -1150,11 +1148,11 @@ public class CipherUtil {
             signature.update(TranscodeUtil.base64StrToByteArray(data));
             return signature.verify(TranscodeUtil.base64StrToByteArray(sign));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (InvalidKeyException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         } catch (SignatureException e) {
-            e.printStackTrace();logger.error(e.getMessage(),e);
+            e.printStackTrace();
         }
         return false;
     }
@@ -1192,5 +1190,5 @@ public class CipherUtil {
         return verifyCertificate(new Date(), keyStorePath, alias, password);
     }
 
-}
 
+}

@@ -25,7 +25,7 @@ server:
 #    key-store: classpath:server.jks
 #    key-store-password: sg7x0wr2fb3yc
 #    key-store-type: JKS
-logging:
-  level:
-    com.*: debug
+#logging:
+#  level:
+#    com.*: debug
 

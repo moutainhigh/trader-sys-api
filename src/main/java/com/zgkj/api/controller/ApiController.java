@@ -41,15 +41,11 @@ public class ApiController {
         QueryWrapper<UserInfo> wrapper=new QueryWrapper<>();
         wrapper.eq("UserName",UserName);
         wrapper.eq("PassWord", CipherUtil.DESEncrypt(PassWord));
-        Integer uid;
         UserInfo userInfo=userInfoService.getOne(wrapper);
         if (null!=userInfo){
-            uid=userInfo.getId();
-            return uid;
-        }else {
-             throw new ServerErrorException("500","账号或密码错误");
+            return userInfo.getId();
         }
-
+        throw new ServerErrorException("500","账号或密码错误");
     }
 
     @PostMapping("getOutboundGoodsId")

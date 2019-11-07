@@ -5,15 +5,10 @@ import java.lang.Character.UnicodeBlock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * 该类处理字符串的转码，可以处理字符串到二进制字符、16进制字符、unicode字符、base64字符之间的转换
- * @author ShaoJiang
- *
- */
 public class TranscodeUtil {
-
     /**
      * 将字符串转换成unicode码
+     *
      * @param str 要转码的字符串
      * @return 返回转码后的字符串
      */
@@ -24,10 +19,10 @@ public class TranscodeUtil {
             UnicodeBlock ub = UnicodeBlock.of(ch);
             if (ub == UnicodeBlock.BASIC_LATIN) {//英文及数字等
                 buffer.append(ch);
-            } else if ((int)ch > 255) {
-                buffer.append("\\u" + Integer.toHexString((int)ch));
+            } else if ((int) ch > 255) {
+                buffer.append("\\u" + Integer.toHexString((int) ch));
             } else {
-                buffer.append("\\" + Integer.toHexString((int)ch));
+                buffer.append("\\" + Integer.toHexString((int) ch));
             }
         }
         return buffer.toString();
@@ -35,6 +30,7 @@ public class TranscodeUtil {
 
     /**
      * 将unicode码反转成字符串
+     *
      * @param unicodeStr unicode码
      * @return 返回转码后的字符串
      */
@@ -51,6 +47,7 @@ public class TranscodeUtil {
 
     /**
      * 将字符串通过base64转码
+     *
      * @param str 要转码的字符串
      * @return 返回转码后的字符串
      */
@@ -60,6 +57,7 @@ public class TranscodeUtil {
 
     /**
      * 将base64码反转成字符串
+     *
      * @param base64Str base64码
      * @return 返回转码后的字符串
      */
@@ -71,6 +69,7 @@ public class TranscodeUtil {
 
     /**
      * 将字节数组通过base64转码
+     *
      * @param byteArray 字节数组
      * @return 返回转码后的字符串
      */
@@ -80,10 +79,11 @@ public class TranscodeUtil {
 
     /**
      * 将base64码转换成字节数组
+     *
      * @param base64Str base64码
      * @return 返回转换后的字节数组
      */
-    public static byte[] base64StrToByteArray(String base64Str) {
+    public static byte[] base64StrToByteArray(String base64Str){
         char[] dataArr = new char[base64Str.length()];
         base64Str.getChars(0, base64Str.length(), dataArr, 0);
         return decode(dataArr);
@@ -91,6 +91,7 @@ public class TranscodeUtil {
 
     /**
      * 将一个字节数组转换成base64的字符数组
+     *
      * @param data 字节数组
      * @return base64字符数组
      */
@@ -123,6 +124,7 @@ public class TranscodeUtil {
 
     /**
      * 将一个base64字符数组解码成一个字节数组
+     *
      * @param data base64字符数组
      * @return 返回解码以后的字节数组
      */
@@ -179,6 +181,7 @@ public class TranscodeUtil {
 
     /**
      * 将字符串编码成16进制数字,适用于所有字符（包括中文）
+     *
      * @param str 字符串
      * @return 返回16进制字符串
      */
@@ -196,6 +199,7 @@ public class TranscodeUtil {
 
     /**
      * 将16进制数字解码成字符串,适用于所有字符（包括中文）
+     *
      * @param hexStr 16进制字符串
      * @return 返回字符串
      */
@@ -211,6 +215,7 @@ public class TranscodeUtil {
 
     /**
      * 将字节数组转换成16进制字符串
+     *
      * @param byteArray 要转码的字节数组
      * @return 返回转码后的16进制字符串
      */
@@ -227,6 +232,7 @@ public class TranscodeUtil {
 
     /**
      * 将16进制字符串转换成字节数组
+     *
      * @param hexStr 要转换的16进制字符串
      * @return 返回转码后的字节数组
      */
@@ -244,13 +250,14 @@ public class TranscodeUtil {
 
     /**
      * 将字符串转换成二进制字符串，以空格相隔
+     *
      * @param str 字符串
      * @return 返回二进制字符串
      */
     public static String strToBinStr(String str) {
-        char[] chars=str.toCharArray();
+        char[] chars = str.toCharArray();
         StringBuffer result = new StringBuffer();
-        for(int i=0; i<chars.length; i++) {
+        for (int i = 0; i < chars.length; i++) {
             result.append(Integer.toBinaryString(chars[i]));
             result.append(" ");
         }
@@ -259,34 +266,37 @@ public class TranscodeUtil {
 
     /**
      * 将二进制字符串转换成Unicode字符串
+     *
      * @param binStr 二进制字符串
      * @return 返回字符串
      */
     public static String binStrToStr(String binStr) {
-        String[] tempStr=strToStrArray(binStr);
-        char[] tempChar=new char[tempStr.length];
-        for(int i=0; i<tempStr.length; i++) {
-            tempChar[i]=binstrToChar(tempStr[i]);
+        String[] tempStr = strToStrArray(binStr);
+        char[] tempChar = new char[tempStr.length];
+        for (int i = 0; i < tempStr.length; i++) {
+            tempChar[i] = binstrToChar(tempStr[i]);
         }
         return String.valueOf(tempChar);
     }
 
     /**
      * 将二进制字符串转换为char
+     *
      * @param binStr 二进制字符串
      * @return 返回字符
      */
     private static char binstrToChar(String binStr) {
-        int[] temp=binstrToIntArray(binStr);
-        int sum=0;
-        for(int i=0; i<temp.length; i++) {
-            sum += temp[temp.length-1-i]<<i;
+        int[] temp = binstrToIntArray(binStr);
+        int sum = 0;
+        for (int i = 0; i < temp.length; i++) {
+            sum += temp[temp.length - 1 - i] << i;
         }
-        return (char)sum;
+        return (char) sum;
     }
 
     /**
      * 将初始二进制字符串转换成字符串数组，以空格相隔
+     *
      * @param str 二进制字符串
      * @return 返回字符串数组
      */
@@ -296,16 +306,17 @@ public class TranscodeUtil {
 
     /**
      * 将二进制字符串转换成int数组
+     *
      * @param binStr 二进制字符串
      * @return 返回int数组
      */
     private static int[] binstrToIntArray(String binStr) {
-        char[] temp=binStr.toCharArray();
-        int[] result=new int[temp.length];
-        for(int i=0; i<temp.length; i++) {
-            result[i]=temp[i]-48;
+        char[] temp = binStr.toCharArray();
+        int[] result = new int[temp.length];
+        for (int i = 0; i < temp.length; i++) {
+            result[i] = temp[i] - 48;
         }
         return result;
     }
-}
 
+}
