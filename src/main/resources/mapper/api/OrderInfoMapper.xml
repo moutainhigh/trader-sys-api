@@ -2,4 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zgkj.api.mapper.OrderInfoMapper">
 
+
+    <select id="getListedMapData" resultType="java.util.LinkedHashMap">
+        select ShopSecName '店铺名称',substring(SaleDate,0,11) '日期',OrderInfo.OrderID '订单编号',orderExpressInfo.TheExpressNo '运单编号',FulfillmentChannel,OrderInfo.OrderState,
+        sysWeight,orderExpressInfo.OrderWeight,Country '国家',
+        sum(CAST(isnull(CASE isnumeric(OrderFreight) when 1 then OrderFreight else null end, 0) AS decimal(10, 2)))'运费',
+        matrix_id'母体编号',
+        Price,
+        sum(CAST(isnull(CASE isnumeric(Cost) when 1 then Cost else null end, 0) AS decimal(10, 2))*OutboundNumder)'成本',
+        sum(OutboundNumder)'产品数',
+        PI.ID'产品编号',
+        ProChnName
+        from OrderInfo
+        left join orderExpressInfo on OrderInfo.OrderID=orderExpressInfo.OrderID
+        left join ShopInfo SI on OrderInfo.ShopID = SI.ID
+        left join OutboundInfo OB on OB.SystemNumber=OrderInfo.SystemNumber
+        left join ProductInfo PI  on PI.ID=OB.OutboundGoodsID
+        where OrderInfo.UserID in (select id from UserInfo where groupId in (#{groupIds}))
+        and  SaleDate> #{start} and  SaleDate &lt; #{end}
+        group by OrderInfo.OrderID,orderExpressInfo.TheExpressNo, sysWeight,orderExpressInfo.OrderWeight,Country,FulfillmentChannel,OrderInfo.OrderState,ShopSecName,substring(SaleDate,0,11),PI.ID, ProChnName, ProEghName, matrix_id,Price
+        order by ShopSecName,substring(SaleDate,0,11);
+    </select>
 </mapper>

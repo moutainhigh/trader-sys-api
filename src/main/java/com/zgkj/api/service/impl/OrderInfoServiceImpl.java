@@ -4,7 +4,11 @@ import com.zgkj.api.entity.OrderInfo;
 import com.zgkj.api.mapper.OrderInfoMapper;
 import com.zgkj.api.service.IOrderInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -17,4 +21,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo> implements IOrderInfoService {
 
+    @Autowired
+    OrderInfoMapper orderInfoMapper;
+
+    public List<Map<String,Object>> getListedMapData(String start,String end,String groupIds){
+        return orderInfoMapper.getListedMapData(start,end,groupIds);
+    }
 }
