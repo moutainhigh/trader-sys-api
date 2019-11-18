@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgkj.api.mapper.ServiceFromMapper">
+
+    <resultMap id="ServiceFromResult" type="com.zgkj.api.entity.ServiceFrom">
+        <result column="ShopInfo.ShopSecName" property="ShopSecName"></result>
+        <result property="NickName" column="NickName"></result>
+        <result property="Price" column="Price"></result>
+        <result property="picture" column="TheImagePath"></result>
+        <result property="picUrl" column="ProductAddress"></result>
+        <result property="ASIN" column="ASINYard"></result>
+        <result property="TotalPrice" column="TotalPrice"></result>
+        <result property="orderMemo" column="orderMemo"></result>
+        <result property="TheExpressNo" column="TheExpressNo"></result>
+        <result property="OrderID" column="OrderID"></result>
+    </resultMap>
+
+    <select id="getServiceFromList" resultMap="ServiceFromResult">
+        select
+        ServiceFrom.ID,ServiceFrom.ServiceID,ServiceFrom.OrderID,ServiceFrom.ProductID,ShopInfo.ShopSecName,UserInfo.NickName,
+        ServiceFrom.ReCountry,OutboundInfo.ThePricePaid Price,ServiceFrom.CreateTime,ServiceFrom.State,ServiceFrom.Reason,ServiceFrom.Resp,
+        ServiceFrom.Description,ServiceFrom.Image,ServiceFrom.IsDel,ServiceFrom.Repeat,OutboundInfo.ProductAddress,OutboundInfo.TheImagePath,
+        OutboundInfo.ASINYard,ServiceFrom.OID,OrderInfo.TotalPrice,OrderInfoMemo.orderMemo,orderExpressInfo.TheExpressNo
+        from ServiceFrom
+        left join OrderInfo on ServiceFrom.OrderID=OrderInfo.OrderID
+        left join OutboundInfo on OutboundInfo.SystemNumber = OrderInfo.SystemNumber and OutboundInfo.ID= ServiceFrom.outboundId
+        left join ShopInfo on OrderInfo.ShopID=ShopInfo.ID left join UserInfo on ServiceFrom.UserID=UserInfo.ID
+        left join OrderInfoMemo on OrderInfoMemo.OrderID=OrderInfo.OrderID left join orderExpressInfo on orderExpressInfo.OrderID=OrderInfo.OrderID
+        where (ServiceFrom.Resp='109' or ServiceFrom.Resp='114') and ServiceFrom.CreateTime between #{start} and #{end} order by ServiceFrom.CreateTime desc
+    </select>
+</mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgkj.api.mapper.DictItemMapper">
+
+    <resultMap id="result" type="com.zgkj.api.entity.DictItem">
+        <result column="item_value" property="itemValue"></result>
+        <result column="item_CN_name" property="itemCnName"></result>
+    </resultMap>
+    <select id="getListbyType" resultMap="result">
+        select d2.item_value,d2.item_CN_name from DictItem d1,DictItem d2 where (d1.id=d2.parentId or d1.id=d2.id)
+        and d1.item_name='Reason' order by d2.id
+    </select>
+</mapper>
