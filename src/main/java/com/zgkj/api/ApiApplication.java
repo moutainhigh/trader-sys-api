@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @MapperScan(basePackages = "com.zgkj.api.mapper")
+@MapperScan(basePackages = "com.zgkj.api.tradeFlow.mapper")
 public class ApiApplication {
 
     public static void main(String[] args) {

@@ -23,7 +23,7 @@ public class ServiceFromServiceImpl extends ServiceImpl<ServiceFromMapper, Servi
     @Autowired
     ServiceFromMapper serviceFromMapper;
 
-    public List<ServiceFrom> getServiceFromList(String start,String end){
-        return serviceFromMapper.getServiceFromList(start,end);
+    public List<ServiceFrom> getServiceFromList(String start,String end,String orderid){
+        return serviceFromMapper.getServiceFromList(start,end,orderid);
     }
 }

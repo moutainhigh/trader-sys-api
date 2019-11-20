@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface ServiceFromMapper extends BaseMapper<ServiceFrom> {
 
-    List<ServiceFrom> getServiceFromList(String start,String end);
+    List<ServiceFrom> getServiceFromList(String start,String end,String orderid);
 }

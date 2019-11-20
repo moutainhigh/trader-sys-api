@@ -82,6 +82,9 @@ public class ServiceFrom implements Serializable {
     @TableField("outboundId")
     private Integer outboundId;
 
+    @TableField("appealstatus")
+    private Integer appealstatus;
+
     @TableField(exist = false)
     private String ShopSecName;//店铺名称
     @TableField(exist = false)
@@ -102,6 +105,7 @@ public class ServiceFrom implements Serializable {
     private String orderMemo;
     @TableField(exist = false)
     private String TheExpressNo;
+
 
 
 }

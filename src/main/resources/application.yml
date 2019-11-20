@@ -1,9 +1,18 @@
 spring:
   datasource:
-    url: jdbc:sqlserver://52.82.105.72;DatabaseName=TradeOrder11
-    username: sa
-    password: 4UHsIEHBinA9puEu
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      dynamic:
+        datasource:
+          trader:
+            url: jdbc:sqlserver://52.82.105.72;DatabaseName=TradeOrder11
+            username: sa
+            password: 4UHsIEHBinA9puEu
+            driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          tradeFlow:
+            url: jdbc:mysql://52.82.65.118/tradeFlow?useUnicode=true&characterEncoding=utf-8&autoReconnect=true
+            username: root
+            password: ziguang@888
+            driver-class-name: com.mysql.jdbc.Driver
+        primary: trader
   servlet:
     multipart:
       max-file-size: 10MB

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgkj.api.tradeFlow.mapper.LdapUserMapper">
+    <select id="checkOperator" resultType="com.zgkj.api.tradeFlow.entity.LdapUser">
+		select * from ldap_user where  uid in (select b.operationUserId from orderinfo a left join outboundinfo b on a.systemNumber=b.systemNumber where orderid=#{orderid})
+	</select>
+
+	<resultMap type="com.zgkj.api.tradeFlow.entity.LdapUserAndUserGroupBean" id="returnBeanList">
+		<id column="id" property="id" jdbcType="INTEGER"/>
+		<result column="gid" property="gid" jdbcType="VARCHAR" />
+		<result column="uid" property="uid" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getUserList" parameterType="java.lang.String" resultMap="returnBeanList">
+		select s.id,s.gid,s.uid,(SELECT username_cn from ldap_user where uid=s.uid)as username from ldap_user_group_ass s where s.gid in
+		(SELECT gid FROM ldap_user_group_ass where uid=#{userName})
+	</select>
+</mapper>

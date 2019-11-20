@@ -10,6 +10,9 @@ import com.zgkj.api.entity.ServiceFrom;
 import com.zgkj.api.service.IDictItemService;
 import com.zgkj.api.service.IProductClassService;
 import com.zgkj.api.service.IServiceFromService;
+import com.zgkj.api.tradeFlow.entity.LdapUser;
+import com.zgkj.api.tradeFlow.entity.LdapUserAndUserGroupBean;
+import com.zgkj.api.tradeFlow.service.ILdapUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,10 +37,12 @@ public class ServiceFromController {
     IProductClassService productClassService;
     @Autowired
     IDictItemService dictItemService;
+    @Autowired
+    ILdapUserService ldapUserService;
 
     @ResponseBody
     @RequestMapping("getList")
-    public List<ServiceFrom> getList(String start,String end){
+    public List<ServiceFrom> getList(String start,String end,String uid,String orderid){
         if((null==end||"".equals(end))&&(null==start||"".equals(start))){
             end=DateUtils.getDateNow()+" 23:59:59";
             start=DateUtils.getDateBefore(30)+" 00:00:00";
@@ -45,7 +50,17 @@ public class ServiceFromController {
             end+=" 23:59:59";
             start+=" 00:00:00";
         }
-        List<ServiceFrom> list=serviceFromService.getServiceFromList(start,end);
+        List<ServiceFrom> list=serviceFromService.getServiceFromList(start,end,orderid);
+        if (null!=uid&&!"".equals(uid)){
+            List<ServiceFrom> list1=new ArrayList<>();
+            for (ServiceFrom serviceFrom:list) {
+                LdapUser ldapUser=ldapUserService.checkOperator(serviceFrom.getOrderID());
+                if (null!=ldapUser&&ldapUser.getUid().equals(uid)){
+                    list1.add(serviceFrom);
+                }
+            }
+            return list1;
+        }
         return list;
     }
 
@@ -84,5 +99,23 @@ public class ServiceFromController {
         result+=show_Reason;
         return result;
     }
+
+    @ResponseBody
+    @RequestMapping("checkOperator")
+    public LdapUser checkOperator(String orderid){
+        LdapUser ldapUser=ldapUserService.checkOperator(orderid);
+        if (null!=ldapUser&&!"".equals(ldapUser)){
+            return ldapUser;
+        }else {
+            return null;
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping("userList")
+    public List<LdapUserAndUserGroupBean> userList(){
+        return ldapUserService.getUserList("yujie_lin");
+    }
+
 
 }

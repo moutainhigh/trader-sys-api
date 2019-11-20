@@ -15,17 +15,29 @@
         <result property="OrderID" column="OrderID"></result>
     </resultMap>
 
+    <sql id="where">
+        <if test="null!=orderid">
+            ServiceFrom.OrderID=#{orderid}
+        </if>
+        <if test="null==orderid">
+            (ServiceFrom.Resp='109' or ServiceFrom.Resp='114') and ServiceFrom.CreateTime between #{start} and #{end}
+        </if>
+    </sql>
+
     <select id="getServiceFromList" resultMap="ServiceFromResult">
         select
         ServiceFrom.ID,ServiceFrom.ServiceID,ServiceFrom.OrderID,ServiceFrom.ProductID,ShopInfo.ShopSecName,UserInfo.NickName,
         ServiceFrom.ReCountry,OutboundInfo.ThePricePaid Price,ServiceFrom.CreateTime,ServiceFrom.State,ServiceFrom.Reason,ServiceFrom.Resp,
         ServiceFrom.Description,ServiceFrom.Image,ServiceFrom.IsDel,ServiceFrom.Repeat,OutboundInfo.ProductAddress,OutboundInfo.TheImagePath,
-        OutboundInfo.ASINYard,ServiceFrom.OID,OrderInfo.TotalPrice,OrderInfoMemo.orderMemo,orderExpressInfo.TheExpressNo
+        OutboundInfo.ASINYard,ServiceFrom.OID,OrderInfo.TotalPrice,OrderInfoMemo.orderMemo,orderExpressInfo.TheExpressNo,ServiceFrom.appealstatus
         from ServiceFrom
         left join OrderInfo on ServiceFrom.OrderID=OrderInfo.OrderID
         left join OutboundInfo on OutboundInfo.SystemNumber = OrderInfo.SystemNumber and OutboundInfo.ID= ServiceFrom.outboundId
         left join ShopInfo on OrderInfo.ShopID=ShopInfo.ID left join UserInfo on ServiceFrom.UserID=UserInfo.ID
         left join OrderInfoMemo on OrderInfoMemo.OrderID=OrderInfo.OrderID left join orderExpressInfo on orderExpressInfo.OrderID=OrderInfo.OrderID
-        where (ServiceFrom.Resp='109' or ServiceFrom.Resp='114') and ServiceFrom.CreateTime between #{start} and #{end} order by ServiceFrom.CreateTime desc
+        <where>
+            <include refid="where"></include>
+        </where>
+        order by ServiceFrom.CreateTime desc
     </select>
 </mapper>
