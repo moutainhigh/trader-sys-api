@@ -37,7 +37,12 @@ public class OrderAppealController {
     @ResponseBody
     @RequestMapping("save")
     public String save(OrderAppeal orderAppeal){
-        orderAppeal.setOperator(ldapUserService.checkOperator(orderAppeal.getOrderid()).getUsernameCn());
+        String operator=ldapUserService.checkOperator(orderAppeal.getOrderid()).getUsernameCn();
+        if (null!=operator&&!"".equals(operator)){
+            orderAppeal.setOperator(operator);
+        }else {
+            orderAppeal.setOperator("暂无数据");
+        }
         try {
             Boolean i=orderAppealService.save(orderAppeal);
             if (i){
@@ -64,7 +69,7 @@ public class OrderAppealController {
         i=orderAppealService.remove(wrapper);
         if (i){
             QueryWrapper<ServiceFrom> wrapper1=new QueryWrapper<>();
-            wrapper.eq("OrderID",orderid);
+            wrapper1.eq("OrderID",orderid);
             ServiceFrom serviceFrom=new ServiceFrom();
             serviceFrom.setAppealstatus(0);
             serviceFromService.update(serviceFrom,wrapper1);
