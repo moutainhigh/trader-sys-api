@@ -2,9 +2,14 @@ package com.util;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletResponse;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -117,12 +122,45 @@ public class ExcelUtils {
                 }
                 for (int j = 0; j < b.length; j++) {
                     int k = b[j];
-                    if (k < 0) k += 256;
+                    if (k < 0) {
+                        k += 256;
+                    }
                     sb.append("%" + Integer.toHexString(k).toUpperCase());
                 }
             }
         }
         return sb.toString();
+    }
+
+    public static List<Map<String,Object>> importExcel(MultipartFile file,String[] mapKeys){
+        XSSFWorkbook workbook=null;
+        try {
+            InputStream in = file.getInputStream();
+            workbook = new XSSFWorkbook(in);// 创建对Excel工作薄
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        // 获取该工作表的第一行
+        XSSFRow row = null;
+        // 获取该工作表的第一个单元格
+        XSSFCell cell = null;
+        // 存放excel的List
+        List<Map<String,Object>> itemList=new ArrayList<>();
+        for (int i = 0;i<=sheet.getLastRowNum(); i++) {
+            // 在循环里面写，List保存的是引用，故在外边写会被覆盖，对象的地址相同
+            Map<String,Object> item=new HashMap<>();
+            row = sheet.getRow(i);
+            for (int j=0;j<=mapKeys.length;j++){
+                // 获取第I列 第j个单元格
+                if (row.getCell(j)!=null){
+                    row.getCell(j).setCellType(Cell.CELL_TYPE_STRING);
+                    item.put(mapKeys[j],row.getCell(j).getRichStringCellValue().getString().replaceAll("\r|\n", "").trim());
+                }
+            }
+            itemList.add(item);
+        }
+        return itemList;
     }
 
 }

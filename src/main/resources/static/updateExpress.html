@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>运单号更新</title>
+    <meta charset="utf-8">
+    <link rel="icon" href="https://cn.vuejs.org/images/logo.png" type="image/png">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link rel="stylesheet" href="highlight/styles/zenburn.css">
+    <script src="highlight/highlight.pack.js"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-alert
+                    title="批量更新USPS运单号"
+                    type="info"
+                    description="Excel格式：订单号 运单号"
+                    :closable=false
+                    center>
+            </el-alert>
+        </el-header>
+        <el-main>
+            <el-row :gutter="20">
+                <el-col :span="12" :offset="6">
+                    <div class="grid-content">
+                        <pre class='hljs grid-content'>
+                            <code v-if="resList!=null" v-for="item in resList">
+                                <code>{{item}}</code>
+                            </code>
+                        </pre>
+                    </div>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20">
+                <el-col :span="7"><div class="grid-content"></div></el-col>
+                <el-col :span="10" style="text-align: center">
+                    <el-upload
+                            class="upload-demo"
+                            ref="upload"
+                            name="file"
+                            action="http://localhost:9999/trader/orderinfo/updateExpress"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            :file-list="fileList"
+                            :multiple="false"
+                            :limit="1"
+                            :on-success="onsuccess"
+                            :on-error="onerr"
+                            accept=".xlsx"
+                            :auto-upload="false">
+                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">开始导入</el-button>
+                        <div slot="tip" class="el-upload__tip">只能上传Excel 2007 及以上版本文件</div>
+                    </el-upload>
+                </el-col>
+                <el-col :span="7"><div class="grid-content"></div></el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+</body>
+<script>
+    hljs.initHighlightingOnLoad();
+
+    new Vue({
+        el:'#app',
+        data:{
+            resList:[],
+            fileList:[],
+            form:{
+
+            }
+        },
+        computed:{
+
+        },
+        methods:{
+            onsuccess(response, file, fileList){
+                if (response.status==1){
+                    this.resList=response.resultBody
+                }
+            },
+            onerr(response, file, fileList){
+                this.resList=response.errorMsg
+            },
+            submitUpload() {
+                this.$refs.upload.submit();
+            },
+            handleRemove(file, fileList) {
+                console.log(file, fileList);
+            },
+            handlePreview(file) {
+                console.log(file);
+            }
+        },
+        watch:{
+
+        }
+    })
+</script>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        padding: 18px 0;
+    }
+
+    .box-card {
+        width: 480px;
+    }
+    .el-row {
+        margin-bottom: 20px;
+    &:last-child {
+         margin-bottom: 0;
+     }
+    }
+    .el-col {
+        border-radius: 4px;
+    }
+    .bg-purple-dark {
+        background: #99a9bf;
+    }
+    .bg-purple {
+        background: #d3dce6;
+    }
+    .bg-purple-light {
+        background: #e5e9f2;
+    }
+    .grid-content {
+        border-radius: 4px;
+        min-height: 36px;
+    }
+    .row-bg {
+        padding: 10px 0;
+        background-color: #f9fafc;
+    }
+</style>
+</html>
