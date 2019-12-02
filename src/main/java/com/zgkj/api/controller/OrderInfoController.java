@@ -3,9 +3,12 @@ package com.zgkj.api.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.util.DateUtils;
 import com.util.ExcelUtils;
+import com.util.IPUtil;
 import com.zgkj.api.entity.OrderExpressInfo;
+import com.zgkj.api.entity.OrderRecord;
 import com.zgkj.api.service.IOrderExpressInfoService;
 import com.zgkj.api.service.IOrderInfoService;
+import com.zgkj.api.service.IOrderRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -27,6 +31,8 @@ public class OrderInfoController {
     private IOrderInfoService orderInfoService;
     @Autowired
     private IOrderExpressInfoService orderExpressInfoService;
+    @Autowired
+    private IOrderRecordService orderRecordService;
 
     @ResponseBody
     @RequestMapping("exportExcel")
@@ -41,7 +47,7 @@ public class OrderInfoController {
 
     @ResponseBody
     @RequestMapping("updateExpress")
-    public List<String> updateExpress(@RequestParam("file") MultipartFile file){
+    public List<String> updateExpress(@RequestParam("file") MultipartFile file, HttpServletRequest request){
         DecimalFormat df = new DecimalFormat("0");
         String[] keys={"orderid","expNo"};
         List<Map<String,Object>> list=ExcelUtils.importExcel(file,keys);
@@ -62,6 +68,7 @@ public class OrderInfoController {
                     res=orderExpressInfoService.update(expressInfo,wrapper);
                     if (res){
                         result+="订单: "+list.get(i).get("orderid")+" 更新运单号: "+expressInfo.getTheExpressNo()+" 成功!";
+                        addRecord(String.valueOf(list.get(i).get("orderid")),expressInfo.getTheExpressNo(),request);
                     }else {
                         result+="订单: "+list.get(i).get("orderid")+" 更新运单号: "+expressInfo.getTheExpressNo()+" 失败!";
                     }
@@ -69,6 +76,7 @@ public class OrderInfoController {
                     res=orderExpressInfoService.save(expressInfo);
                     if (res){
                         result+="订单: "+list.get(i).get("orderid")+" +运单号: "+expressInfo.getTheExpressNo()+" 插入成功!";
+                        addRecord(String.valueOf(list.get(i).get("orderid")),expressInfo.getTheExpressNo(),request);
                     }else {
                         result+="订单: "+list.get(i).get("orderid")+" +运单号: "+expressInfo.getTheExpressNo()+" 插入失败!";
                     }
@@ -82,6 +90,17 @@ public class OrderInfoController {
             resList.add(result);
         }
         return resList;
+    }
+
+    private void addRecord(String orderid,String expNo,HttpServletRequest request){
+        OrderRecord record=new OrderRecord();
+        record.setCreateDate(DateUtils.getTimeNow());
+        record.setIp(IPUtil.getClientIP(request));
+        record.setStatus(0);
+        record.setOperateContent("将运单号修改为: "+expNo);
+        record.setUserID(237);
+        record.setOrderID(orderid);
+        orderRecordService.save(record);
     }
 
 }
