@@ -24,7 +24,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     OrderInfoMapper orderInfoMapper;
 
-    public List<Map<String,Object>> getListedMapData(String start,String end,String groupIds){
+    @Override
+    public List<Map<String,Object>> getListedMapData(String start, String end, String groupIds){
         return orderInfoMapper.getListedMapData(start,end,groupIds);
     }
 }

@@ -13,6 +13,6 @@
 	</resultMap>
 	<select id="getUserList" parameterType="java.lang.String" resultMap="returnBeanList">
 		select s.id,s.gid,s.uid,(SELECT username_cn from ldap_user where uid=s.uid)as username from ldap_user_group_ass s where s.gid in
-		(SELECT gid FROM ldap_user_group_ass where uid=#{userName})
+		(SELECT gid FROM ldap_user_group_ass where uid=#{userName}) and s.uid not in ('zhihao_zou','xin_hou','ming_dai')
 	</select>
 </mapper>

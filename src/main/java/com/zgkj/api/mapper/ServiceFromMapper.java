@@ -2,6 +2,7 @@ package com.zgkj.api.mapper;
 
 import com.zgkj.api.entity.ServiceFrom;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -16,4 +17,5 @@ import java.util.List;
 public interface ServiceFromMapper extends BaseMapper<ServiceFrom> {
 
     List<ServiceFrom> getServiceFromList(String start,String end,String orderid);
+    List<ServiceFrom> getAppealList(@Param("orderid") String orderid);
 }

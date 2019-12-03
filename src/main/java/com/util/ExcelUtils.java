@@ -23,10 +23,26 @@ public class ExcelUtils {
      * @param response
      * @throws Exception
      */
-    public static void exportExcel(List<Map<String,Object>> data,String[] header,String filename,HttpServletResponse response) throws Exception{
-
-        //创建HSSFWorkbook对象(excel的文档对象)
+    public static void exportExcel(List<List<Map<String,Object>>> data,String[] header,String[] sheets,String filename,HttpServletResponse response) throws Exception{
         XSSFWorkbook wb = new XSSFWorkbook();
+        if (null!=sheets&&!"".equals(sheets)){
+            for (int i=0;i<sheets.length;i++) {
+                wb=sheetData(wb,sheets[i],data.get(i),header);
+            }
+        }else {
+            wb=sheetData(wb,"sheet1",data.get(0),header);
+        }
+
+        //输出Excel文件
+        OutputStream output=response.getOutputStream();
+        response.reset();
+        response.setHeader("Content-disposition", "attachment; filename="+toUtf8String(filename));
+        response.setContentType("application/msexcel");
+        wb.write(output);
+        output.close();
+    }
+
+    public static XSSFWorkbook sheetData(XSSFWorkbook wb,String sheetName,List<Map<String,Object>> data,String[] header) throws Exception{
         //创建XSSFCellStyle
         XSSFCellStyle cellStyle_red=wb.createCellStyle();
         XSSFCellStyle cellStyle_green=wb.createCellStyle();
@@ -53,10 +69,11 @@ public class ExcelUtils {
         cellStyle_green.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
         cellStyle_row.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         cellStyle_row.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
-        //建立新的sheet对象（excel的表单）
-        XSSFSheet sheet=wb.createSheet("Sheet1");
 
-       //设置标题
+        //建立新的sheet对象（excel的表单）
+        XSSFSheet sheet=wb.createSheet(sheetName);
+
+        //设置标题
         XSSFRow rowHeader=sheet.createRow(0);
         if (null!=header&&!"".equals(header)){
             for (int i =0;i<header.length;i++){
@@ -98,13 +115,8 @@ public class ExcelUtils {
             i++;
         }
 
-        //输出Excel文件
-        OutputStream output=response.getOutputStream();
-        response.reset();
-        response.setHeader("Content-disposition", "attachment; filename="+toUtf8String(filename));
-        response.setContentType("application/msexcel");
-        wb.write(output);
-        output.close();
+        return wb;
+
     }
 
     //解决文件名中文乱码
@@ -132,11 +144,15 @@ public class ExcelUtils {
         return sb.toString();
     }
 
+    private void sheetData(XSSFSheet sheet){
+
+    }
+
     public static List<Map<String,Object>> importExcel(MultipartFile file,String[] mapKeys){
         XSSFWorkbook workbook=null;
         try {
             InputStream in = file.getInputStream();
-            workbook = new XSSFWorkbook(in);// 创建对Excel工作薄
+            workbook = new XSSFWorkbook(in);
         }catch (IOException e){
             e.printStackTrace();
         }

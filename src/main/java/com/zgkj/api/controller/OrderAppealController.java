@@ -87,4 +87,19 @@ public class OrderAppealController {
         return orderAppealService.getOne(wrapper);
     }
 
+    @ResponseBody
+    @RequestMapping("reject")
+    public String reject(String orderid){
+        QueryWrapper<ServiceFrom> wrapper1=new QueryWrapper<>();
+        wrapper1.eq("OrderID",orderid);
+        ServiceFrom serviceFrom=new ServiceFrom();
+        serviceFrom.setAppealstatus(2);
+        Boolean i= serviceFromService.update(serviceFrom,wrapper1);
+        if (i){
+            return "success";
+        }else {
+            return "failed";
+        }
+    }
+
 }

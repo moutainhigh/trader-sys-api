@@ -4,10 +4,13 @@ package com.zgkj.api.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.util.DateUtil;
 import com.util.DateUtils;
+import com.util.IPUtil;
 import com.zgkj.api.entity.DictItem;
+import com.zgkj.api.entity.OrderRecord;
 import com.zgkj.api.entity.ProductClass;
 import com.zgkj.api.entity.ServiceFrom;
 import com.zgkj.api.service.IDictItemService;
+import com.zgkj.api.service.IOrderRecordService;
 import com.zgkj.api.service.IProductClassService;
 import com.zgkj.api.service.IServiceFromService;
 import com.zgkj.api.tradeFlow.entity.LdapUser;
@@ -16,6 +19,7 @@ import com.zgkj.api.tradeFlow.service.ILdapUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Max;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +43,8 @@ public class ServiceFromController {
     IDictItemService dictItemService;
     @Autowired
     ILdapUserService ldapUserService;
+    @Autowired
+    IOrderRecordService orderRecordService;
 
     @ResponseBody
     @RequestMapping("getList")
@@ -62,6 +68,12 @@ public class ServiceFromController {
             return list1;
         }
         return list;
+    }
+
+    @ResponseBody
+    @RequestMapping("AppealList")
+    public List<ServiceFrom> AppealList(String orderid){
+        return serviceFromService.getAppealList(orderid);
     }
 
     @ResponseBody
@@ -115,6 +127,29 @@ public class ServiceFromController {
     @RequestMapping("userList")
     public List<LdapUserAndUserGroupBean> userList(){
         return ldapUserService.getUserList("yujie_lin");
+    }
+
+    @ResponseBody
+    @RequestMapping("updateResp")
+    public String updateResp(String orderid, Integer resp, String respName, Integer userid,HttpServletRequest request){
+        QueryWrapper<ServiceFrom> wrapper=new QueryWrapper<>();
+        wrapper.eq("OrderID",orderid);
+        ServiceFrom serviceFrom=new ServiceFrom();
+        serviceFrom.setResp(resp);
+        Boolean i= serviceFromService.update(serviceFrom,wrapper);
+        if (i){
+            serviceFrom=serviceFromService.getOne(wrapper);
+            OrderRecord orderRecord=new OrderRecord();
+            orderRecord.setUserID(userid);
+            orderRecord.setOrderID(serviceFrom.getServiceID());
+            orderRecord.setOperateContent("将售后责任方修改为: "+respName);
+            orderRecord.setIp(IPUtil.getClientIP(request));
+            orderRecord.setStatus(0);
+            orderRecord.setCreateDate(DateUtils.getTimeNow());
+            orderRecordService.save(orderRecord);
+            return "success";
+        }
+        return "failed";
     }
 
 

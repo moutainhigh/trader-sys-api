@@ -3,7 +3,25 @@
 <mapper namespace="com.zgkj.api.mapper.ServiceFromMapper">
 
     <resultMap id="ServiceFromResult" type="com.zgkj.api.entity.ServiceFrom">
-        <result column="ShopInfo.ShopSecName" property="ShopSecName"></result>
+        <id property="id" column="ID"></id>
+        <result property="OrderID" column="ServiceFrom.OrderID"></result>
+        <result property="CreateTime" column="CreateTime"></result>
+        <result property="ServiceID" column="ServiceID"></result>
+        <result property="ProductID" column="ProductID"></result>
+        <result property="State" column="State"></result>
+        <result property="Reason" column="Reason"></result>
+        <result property="Resp" column="Resp"></result>
+        <result property="IsDel" column="IsDel"></result>
+        <result property="Description" column="Description"></result>
+        <result property="Image" column="Image"></result>
+        <result property="Repeat" column="Repeat"></result>
+        <result property="UserID" column="UserID"></result>
+        <result property="ReCountry" column="ReCountry"></result>
+        <result property="oid" column="OID"></result>
+        <result property="proId" column="proId"></result>
+        <result property="outboundId" column="outboundId"></result>
+        <result property="appealstatus" column="appealstatus"></result>
+        <result column="ShopSecName" property="ShopSecName"></result>
         <result property="NickName" column="NickName"></result>
         <result property="Price" column="Price"></result>
         <result property="picture" column="TheImagePath"></result>
@@ -13,6 +31,12 @@
         <result property="orderMemo" column="orderMemo"></result>
         <result property="TheExpressNo" column="TheExpressNo"></result>
         <result property="OrderID" column="OrderID"></result>
+        <association property="orderAppeal" javaType="com.zgkj.api.entity.OrderAppeal">
+            <id property="id" column="opid"></id>
+            <result property="operator" column="operator"></result>
+            <result property="memo" column="memo"></result>
+            <result property="imgurl" column="imgurl"></result>
+        </association>
     </resultMap>
 
     <sql id="where">
@@ -37,6 +61,28 @@
         left join OrderInfoMemo on OrderInfoMemo.OrderID=OrderInfo.OrderID left join orderExpressInfo on orderExpressInfo.OrderID=OrderInfo.OrderID
         <where>
             <include refid="where"></include>
+        </where>
+        order by ServiceFrom.CreateTime desc
+    </select>
+
+    <select id="getAppealList" resultMap="ServiceFromResult">
+        select
+        ServiceFrom.ID,ServiceFrom.ServiceID,ServiceFrom.OrderID,ServiceFrom.ProductID,ShopInfo.ShopSecName,UserInfo.NickName,
+        ServiceFrom.ReCountry,OutboundInfo.ThePricePaid Price,ServiceFrom.CreateTime,ServiceFrom.State,ServiceFrom.Reason,ServiceFrom.Resp,
+        ServiceFrom.Description,ServiceFrom.Image,ServiceFrom.IsDel,ServiceFrom.Repeat,OutboundInfo.ProductAddress,OutboundInfo.TheImagePath,
+        OutboundInfo.ASINYard,ServiceFrom.OID,OrderInfo.TotalPrice,OrderInfoMemo.orderMemo,orderExpressInfo.TheExpressNo,ServiceFrom.appealstatus,
+        orderAppeal.memo,orderAppeal.operator,orderAppeal.imgurl,orderAppeal.id as opid
+        from ServiceFrom
+        left join OrderInfo on ServiceFrom.OrderID=OrderInfo.OrderID
+        left join OutboundInfo on OutboundInfo.SystemNumber = OrderInfo.SystemNumber and OutboundInfo.ID= ServiceFrom.outboundId
+        left join ShopInfo on OrderInfo.ShopID=ShopInfo.ID left join UserInfo on ServiceFrom.UserID=UserInfo.ID
+        left join OrderInfoMemo on OrderInfoMemo.OrderID=OrderInfo.OrderID left join orderExpressInfo on orderExpressInfo.OrderID=OrderInfo.OrderID
+        right join orderAppeal on orderAppeal.orderid = ServiceFrom.OrderID
+        <where>
+            <if test="null!=orderid and ''!=orderid">
+                ServiceFrom.OrderID=#{orderid}
+            </if>
+            and ServiceFrom.appealstatus!=2 and (ServiceFrom.Resp='109' or ServiceFrom.Resp='114')
         </where>
         order by ServiceFrom.CreateTime desc
     </select>

@@ -2,4 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zgkj.api.tradeFlow.mapper.OrderinfoMapper">
 
+    <select id="cntOperatorMapData" resultType="java.util.LinkedHashMap">
+        SELECT a.operationUserId as '美工',a.cnt as '总计',
+                b.cnt as '未重新下单',concat(format((b.cnt/a.cnt)*100,2),'%') as '未重新下单占比',
+                c.cnt as '重新下单',concat(format((c.cnt/a.cnt)*100,2),'%') as '重新下单占比',
+                (b.cnt+c.cnt) as '合计',concat(format(((b.cnt+c.cnt)/a.cnt)*100,2),'%') as '合计占比'
+        FROM
+        (
+            select operationUserId,count(*) as cnt from orderinfo
+            left join outboundinfo on orderinfo.systemNumber=outboundinfo.systemNumber
+            where createDate>#{start} and createDate &lt; #{end}
+            group by operationUserId
+        ) a
+        LEFT join
+        (
+            select outboundinfo.operationUserId,count(*) as cnt
+            from orderinfo
+            left join outboundinfo on orderinfo.systemNumber=outboundinfo.systemNumber
+            left join newOperationlog on newOperationlog.orderId=orderinfo.orderId and newOperationlog.remark='重新下单'
+            where createDate> #{start} and createDate &lt; #{end} and datediff(overTime,createDate)>3 and operationTime is null
+            group by outboundinfo.operationUserId
+        ) b on a.operationUserId=b.operationUserId
+        left join
+        (
+            select outboundinfo.operationUserId,count(*) as cnt
+            from orderinfo
+            left join outboundinfo on orderinfo.systemNumber=outboundinfo.systemNumber
+            left join newOperationlog on newOperationlog.orderId=orderinfo.orderId and newOperationlog.remark='重新下单'
+            where createDate> #{start} and createDate &lt; #{end} and datediff(overTime,operationTime)>3 and operationTime is not null
+            group by outboundinfo.operationUserId
+        ) c on a.operationUserId=c.operationUserId
+    </select>
+
+    <select id="cntOperatorMapData1" resultType="java.util.LinkedHashMap">
+        select outboundinfo.operationUserId as '美工',datediff(overTime,operationTime) as '时间差',count(*) as '总数'
+        from  orderinfo
+        left join outboundinfo on orderinfo.systemNumber=outboundinfo.systemNumber
+        left join newOperationlog on newOperationlog.orderId=orderinfo.orderId and newOperationlog.remark='重新下单'
+        where createDate> #{start} and createDate &lt; #{end} and datediff(overTime,operationTime)>3 and operationTime is not null
+        group by outboundinfo.operationUserId,datediff(overTime,operationTime);
+    </select>
+
+    <select id="cntOperatorMapData2" resultType="java.util.LinkedHashMap">
+        select outboundinfo.operationUserId as '美工',datediff(overTime,createDate) as '时间差',count(*) as '总数'
+        from  orderinfo
+        left join outboundinfo on orderinfo.systemNumber=outboundinfo.systemNumber
+        left join newOperationlog on newOperationlog.orderId=orderinfo.orderId and newOperationlog.remark='重新下单'
+        where createDate> #{start} and createDate &lt; #{end} and datediff(overTime,createDate)>3 and operationTime is null
+        group by outboundinfo.operationUserId,datediff(overTime,createDate);
+    </select>
 </mapper>

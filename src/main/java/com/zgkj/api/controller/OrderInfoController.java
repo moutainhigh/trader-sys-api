@@ -38,7 +38,9 @@ public class OrderInfoController {
     @RequestMapping("exportExcel")
     public String exportExcel(String start,String end,String groupId,HttpServletResponse response){
         try {
-            ExcelUtils.exportExcel(orderInfoService.getListedMapData(start,end,groupId),null,"每丽匙"+start+"-"+end+".xlsx",response);
+            List<List<Map<String,Object>>> data=new ArrayList<>();
+            data.add(orderInfoService.getListedMapData(start,end,groupId));
+            ExcelUtils.exportExcel(data,null,null,"每丽匙"+start+"-"+end+".xlsx",response);
             return "";
         }catch (Exception e){
             return "导出失败"+e.toString();
@@ -57,7 +59,7 @@ public class OrderInfoController {
             QueryWrapper<OrderExpressInfo> wrapper=new QueryWrapper<>();
             wrapper.eq("OrderID",String.valueOf(list.get(i).get("orderid")));
             OrderExpressInfo expressInfo=new OrderExpressInfo();
-            expressInfo.setTheExpressNo(df.format(Double.valueOf(list.get(i).get("expNo").toString())));
+            expressInfo.setTheExpressNo(list.get(i).get("expNo").toString());
             expressInfo.setExpressage(20);
             expressInfo.setTypeOfShipping("USPS");
             expressInfo.setCreateDate(DateUtils.getTimeNow());

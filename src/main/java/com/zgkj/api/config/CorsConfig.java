@@ -1,4 +1,4 @@
-package com.zgkj.api.Config;
+package com.zgkj.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.zgkj.api.Config;
+package com.zgkj.api.config;
 
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import org.springframework.context.annotation.Bean;

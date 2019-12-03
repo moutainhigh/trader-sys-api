@@ -105,6 +105,8 @@ public class ServiceFrom implements Serializable {
     private String orderMemo;
     @TableField(exist = false)
     private String TheExpressNo;
+    @TableField(exist = false)
+    private OrderAppeal orderAppeal;
 
 
 
