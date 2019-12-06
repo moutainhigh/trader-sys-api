@@ -23,4 +23,8 @@
         group by OrderInfo.OrderID,orderExpressInfo.TheExpressNo, sysWeight,orderExpressInfo.OrderWeight,Country,FulfillmentChannel,OrderInfo.OrderState,ShopSecName,substring(SaleDate,0,11),PI.ID, ProChnName, ProEghName, matrix_id,Price
         order by ShopSecName,substring(SaleDate,0,11);
     </select>
+
+    <select id="getOrderIdWithOutboundId" resultType="java.lang.String">
+        select OrderID from OrderInfo oi left join OutboundInfo ob on oi.SystemNumber=ob.SystemNumber where ob.ID=#{id}
+    </select>
 </mapper>

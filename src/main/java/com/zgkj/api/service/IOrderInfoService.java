@@ -16,4 +16,5 @@ import java.util.Map;
  */
 public interface IOrderInfoService extends IService<OrderInfo> {
     List<Map<String,Object>> getListedMapData(String start,String end,String groupIds);
+    String getOrderIdWithOutboundId(String id);
 }

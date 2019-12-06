@@ -17,5 +17,6 @@ import java.util.Map;
 public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
 
     List<Map<String,Object>> getListedMapData(String start,String end,String groupIds);
+    String getOrderIdWithOutboundId(String id);
 
 }

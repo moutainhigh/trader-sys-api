@@ -30,9 +30,9 @@
             <el-row :gutter="20">
                 <el-col :span="12" :offset="6">
                     <div class="grid-content">
-                        <pre class='hljs grid-content'>
+                        <pre class='hljs grid-content' style="height: 100px">
                             <code v-if="resList!=null" v-for="item in resList">
-                                <code>{{item}}</code>
+                                {{item}}
                             </code>
                         </pre>
                     </div>
@@ -41,24 +41,41 @@
             <el-row :gutter="20">
                 <el-col :span="7"><div class="grid-content"></div></el-col>
                 <el-col :span="10" style="text-align: center">
-                    <el-upload
-                            class="upload-demo"
-                            ref="upload"
-                            name="file"
-                            action="http://52.82.65.118:9999/trader/orderinfo/updateExpress"
-                            :on-preview="handlePreview"
-                            :on-remove="handleRemove"
-                            :file-list="fileList"
-                            :multiple="false"
-                            :limit="1"
-                            :on-success="onsuccess"
-                            :on-error="onerr"
-                            accept=".xlsx"
-                            :auto-upload="false">
-                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">开始导入</el-button>
-                        <div slot="tip" class="el-upload__tip">只能上传Excel 2007 及以上版本文件</div>
-                    </el-upload>
+                    <el-tabs type="border-card">
+                        <el-tab-pane label="扫码导入">
+                            <el-alert
+                                    style="margin-bottom: 5px;"
+                                    center
+                                    show-icon
+                                    title="请关闭中文输入法后扫码"
+                                    type="warning"
+                                    :closable="false">
+                            </el-alert>
+                            <el-input ref="inputData" type="textarea" v-model="form.ExpData" rows="5" @keyup.enter.native="enterSubmit" style="ime-mode: disabled" @input="getTime"></el-input>
+                            <el-button type="info" style="width: 100%;margin-top: 10px" @click="reset">清除</el-button>
+                        </el-tab-pane>
+
+                        <el-tab-pane label="Excel导入">
+                            <el-upload
+                                    class="upload-demo"
+                                    ref="upload"
+                                    name="file"
+                                    action="http://161.189.12.212:8013/trader/orderinfo/updateExpress"
+                                    :on-preview="handlePreview"
+                                    :on-remove="handleRemove"
+                                    :file-list="fileList"
+                                    :multiple="false"
+                                    :limit="1"
+                                    :on-success="onsuccess"
+                                    :on-error="onerr"
+                                    accept=".xlsx"
+                                    :auto-upload="false">
+                                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                                <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">开始导入</el-button>
+                                <div slot="tip" class="el-upload__tip">只能上传Excel 2007 及以上版本文件</div>
+                            </el-upload>
+                        </el-tab-pane>
+                    </el-tabs>
                 </el-col>
                 <el-col :span="7"><div class="grid-content"></div></el-col>
             </el-row>
@@ -72,11 +89,15 @@
     new Vue({
         el:'#app',
         data:{
+            start:'',
+            end:'',
             resList:[],
             fileList:[],
             form:{
 
-            }
+            },
+            inputData:'',
+            baseUrl:"http://161.189.12.212:8013/trader/"
         },
         computed:{
 
@@ -98,6 +119,96 @@
             },
             handlePreview(file) {
                 console.log(file);
+            },
+            getTime(i){
+                if (this.inputData==''){
+                    this.inputData=this.form.ExpData
+                    this.start=new Date().getTime()
+                    console.log(this.start)
+                }
+            },
+            enterSubmit(){
+                this.end=new Date().getTime()
+                console.log("end"+this.end)
+                if (this.end-this.start>1000){
+                    this.$notify.error({
+                        title: '错误',
+                        message: '请使用扫码枪输入！',
+                    });
+                    this.form.ExpData=''
+                    this.start=''
+                    this.end=''
+                    this.inputData=''
+                    return
+                }else {
+                    console.log("ok")
+                    this.inputData=''
+                }
+                var parm=this.form.ExpData.split("\n")
+                var url="orderinfo/scanToUpdateExp?outId="
+                if (parm.length==3){
+                    if (parm[0].startsWith("B")&&parm[0].length<parm[1].length){
+                        if (parm[0]!=''&&parm[1]!=''){
+                            url+=parm[0]+"&expNo="+parm[1]
+                        } else {
+                            this.$notify.error({
+                                title: '错误',
+                                message: '运单码或id码不能为空！',
+                            });
+                            this.form.ExpData=''
+                            return
+                        }
+                    } else if (parm[1].startsWith("B")&&parm[1].length<parm[0].length) {
+                        if (parm[0]!=''&&parm[1]!=''){
+                            url+=parm[1]+"&expNo="+parm[0]
+                        } else {
+                            this.$notify.error({
+                                title: '错误',
+                                message: '运单码或id码不能为空！',
+                            });
+                            this.form.ExpData=''
+                            return
+                        }
+                    }else {
+                        this.$notify.error({
+                            title: '错误',
+                            message: '请分别扫描运单码和id码!'
+                        });
+                        this.form.ExpData=''
+                        return
+                    }
+                    if (parm[0].startsWith("B")||parm[1].startsWith("B")){
+                        this.sendData(url).then(r=>{
+                            if (r.data.status==1){
+                                this.resList.unshift(r.data.resultBody)
+                                this.$notify({
+                                    title: '成功',
+                                    message: '运单修改成功！',
+                                    type: 'success'
+                                });
+                                this.form.ExpData=''
+                            }
+                        })
+                    } else {
+                        this.$notify.error({
+                            title: '错误',
+                            message: 'id码不能为空!'
+                        });
+                        this.form.ExpData=''
+                    }
+
+                }
+            },
+            sendData(method,data){
+                return  axios({
+                    method: 'post',
+                    url: this.baseUrl+method,
+                    data: data
+                })
+            },
+            reset(){
+                this.form.ExpData=''
+                this.$refs.inputData.focus()
             }
         },
         watch:{
@@ -106,6 +217,9 @@
     })
 </script>
 <style>
+    .list {
+        max-height: 200px;
+    }
     .text {
         font-size: 14px;
     }

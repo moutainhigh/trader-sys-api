@@ -28,4 +28,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public List<Map<String,Object>> getListedMapData(String start, String end, String groupIds){
         return orderInfoMapper.getListedMapData(start,end,groupIds);
     }
+    @Override
+    public String getOrderIdWithOutboundId(String id){
+        return orderInfoMapper.getOrderIdWithOutboundId(id);
+    }
 }

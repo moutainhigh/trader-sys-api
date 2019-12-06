@@ -50,7 +50,6 @@ public class OrderInfoController {
     @ResponseBody
     @RequestMapping("updateExpress")
     public List<String> updateExpress(@RequestParam("file") MultipartFile file, HttpServletRequest request){
-        DecimalFormat df = new DecimalFormat("0");
         String[] keys={"orderid","expNo"};
         List<Map<String,Object>> list=ExcelUtils.importExcel(file,keys);
         List<String> resList=new ArrayList<>();
@@ -70,15 +69,16 @@ public class OrderInfoController {
                     res=orderExpressInfoService.update(expressInfo,wrapper);
                     if (res){
                         result+="订单: "+list.get(i).get("orderid")+" 更新运单号: "+expressInfo.getTheExpressNo()+" 成功!";
-                        addRecord(String.valueOf(list.get(i).get("orderid")),expressInfo.getTheExpressNo(),request);
+                        addRecord(String.valueOf(list.get(i).get("orderid")),"将运单号修改为: "+expressInfo.getTheExpressNo(),request);
                     }else {
                         result+="订单: "+list.get(i).get("orderid")+" 更新运单号: "+expressInfo.getTheExpressNo()+" 失败!";
                     }
                 }else if (null==orderExpressInfo||"".equals(orderExpressInfo)){
+                    expressInfo.setOrderID(list.get(i).get("orderid").toString());
                     res=orderExpressInfoService.save(expressInfo);
                     if (res){
                         result+="订单: "+list.get(i).get("orderid")+" +运单号: "+expressInfo.getTheExpressNo()+" 插入成功!";
-                        addRecord(String.valueOf(list.get(i).get("orderid")),expressInfo.getTheExpressNo(),request);
+                        addRecord(String.valueOf(list.get(i).get("orderid")),"将运单号修改为: "+expressInfo.getTheExpressNo(),request);
                     }else {
                         result+="订单: "+list.get(i).get("orderid")+" +运单号: "+expressInfo.getTheExpressNo()+" 插入失败!";
                     }
@@ -94,15 +94,56 @@ public class OrderInfoController {
         return resList;
     }
 
-    private void addRecord(String orderid,String expNo,HttpServletRequest request){
+    private void addRecord(String orderid,String content,HttpServletRequest request){
         OrderRecord record=new OrderRecord();
         record.setCreateDate(DateUtils.getTimeNow());
         record.setIp(IPUtil.getClientIP(request));
         record.setStatus(0);
-        record.setOperateContent("将运单号修改为: "+expNo);
+        record.setOperateContent(content);
         record.setUserID(237);
         record.setOrderID(orderid);
         orderRecordService.save(record);
+    }
+
+    @ResponseBody
+    @RequestMapping("scanToUpdateExp")
+    public String scanToUpdateExp(String outId,String expNo,HttpServletRequest request){
+        String result="";
+        expNo=expNo.substring(8);//去掉前八位
+        outId=outId.replace("B","");
+        String orderid=orderInfoService.getOrderIdWithOutboundId(outId);
+        OrderExpressInfo expressInfo=new OrderExpressInfo();
+        expressInfo.setTheExpressNo(expNo);
+        expressInfo.setExpressage(20);
+        expressInfo.setTypeOfShipping("USPS");
+        expressInfo.setCreateDate(DateUtils.getTimeNow());
+        if (null!=orderid){
+            QueryWrapper<OrderExpressInfo> wrapper=new QueryWrapper<>();
+            wrapper.eq("OrderID",orderid);
+            OrderExpressInfo orderExpressInfo=orderExpressInfoService.getOne(wrapper);
+            Boolean res=false;
+            if (null!=orderExpressInfo){
+                res=orderExpressInfoService.update(expressInfo,wrapper);
+                if (res){
+                    result+="订单: "+orderid+" 更新运单号: "+expNo+" 成功!";
+                    addRecord(orderid,"将运单号修改为: "+expNo,request);
+                }else {
+                    result+="订单: "+orderid+" 更新运单号: "+expNo+" 失败!";
+                }
+            }else {
+                expressInfo.setOrderID(orderid);
+                res=orderExpressInfoService.save(expressInfo);
+                if (res){
+                    result+="订单: "+orderid+" 运单号: "+expNo+" 插入成功!";
+                    addRecord(orderid,"将运单号修改为: "+expNo,request);
+                }else {
+                    result+="订单: "+orderid+" 运单号: "+expNo+" 插入失败!";
+                }
+            }
+        }else {
+            return "id "+outId+" 查询订单编号失败！";
+        }
+        return result;
     }
 
 }
