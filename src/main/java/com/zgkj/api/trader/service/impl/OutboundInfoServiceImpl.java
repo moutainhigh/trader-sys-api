@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -24,7 +25,7 @@ public class OutboundInfoServiceImpl extends ServiceImpl<OutboundInfoMapper, Out
     OutboundInfoMapper outboundInfoMapper;
 
     @Override
-    public List<String> getAllId(Integer Uid,String StartDate,String StopDate) {
+    public List<Map<String,String>> getAllId(Integer Uid, String StartDate, String StopDate) {
         return outboundInfoMapper.getAllId(Uid,StartDate,StopDate);
     }
 }

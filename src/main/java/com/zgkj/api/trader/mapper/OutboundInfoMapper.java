@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -17,6 +18,5 @@ import java.util.List;
  */
 public interface OutboundInfoMapper extends BaseMapper<OutboundInfo> {
 
-    @Select("SELECT OutboundInfo.OutboundGoodsID FROM OutboundInfo left join OrderInfo on OutboundInfo.SystemNumber=OrderInfo.SystemNumber WHERE OrderInfo.UserID=#{Uid} and OrderInfo.SaleDate >#{StartDate} and OrderInfo.SaleDate < #{StopDate} GROUP BY OutboundInfo.OutboundGoodsID")
-    List<String> getAllId(@Param("Uid") Integer Uid,@Param("StartDate") String StartDate,@Param("StopDate") String StopDate);
+    List<Map<String,String>> getAllId(@Param("Uid") Integer Uid, @Param("StartDate") String StartDate, @Param("StopDate") String StopDate);
 }

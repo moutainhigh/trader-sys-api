@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/api")
 @RestController
@@ -46,7 +47,7 @@ public class ApiController {
     }
 
     @PostMapping("getOutboundGoodsId")
-    public List<String> getOutboundGoodsId(@RequestBody JSONObject jsonObject){
+    public List<Map<String,String>> getOutboundGoodsId(@RequestBody JSONObject jsonObject){
         Integer uid=Integer.valueOf(jsonObject.get("Uid").toString());
         String start=jsonObject.get("StartDate").toString();
         String end=jsonObject.get("StopDate").toString();

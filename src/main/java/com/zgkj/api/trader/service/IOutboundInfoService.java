@@ -4,6 +4,7 @@ import com.zgkj.api.trader.entity.OutboundInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -15,5 +16,5 @@ import java.util.List;
  */
 public interface IOutboundInfoService extends IService<OutboundInfo> {
 
-    public List<String> getAllId(Integer Uid,String StartDate,String StopDate);
+    List<Map<String,String>> getAllId(Integer Uid, String StartDate, String StopDate);
 }
