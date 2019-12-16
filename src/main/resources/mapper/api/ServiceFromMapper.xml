@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zgkj.api.mapper.ServiceFromMapper">
+<mapper namespace="com.zgkj.api.trader.mapper.ServiceFromMapper">
 
-    <resultMap id="ServiceFromResult" type="com.zgkj.api.entity.ServiceFrom">
+    <resultMap id="ServiceFromResult" type="com.zgkj.api.trader.entity.ServiceFrom">
         <id property="id" column="ID"></id>
         <result property="OrderID" column="ServiceFrom.OrderID"></result>
         <result property="CreateTime" column="CreateTime"></result>
@@ -31,7 +31,7 @@
         <result property="orderMemo" column="orderMemo"></result>
         <result property="TheExpressNo" column="TheExpressNo"></result>
         <result property="OrderID" column="OrderID"></result>
-        <association property="orderAppeal" javaType="com.zgkj.api.entity.OrderAppeal">
+        <association property="orderAppeal" javaType="com.zgkj.api.trader.entity.OrderAppeal">
             <id property="id" column="opid"></id>
             <result property="operator" column="operator"></result>
             <result property="memo" column="memo"></result>

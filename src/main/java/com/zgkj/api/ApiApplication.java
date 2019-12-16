@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-@MapperScan(basePackages = "com.zgkj.api.mapper")
+@MapperScan(basePackages = "com.zgkj.api.trader.mapper")
 @MapperScan(basePackages = "com.zgkj.api.tradeFlow.mapper")
 public class ApiApplication {
 

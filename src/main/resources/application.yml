@@ -3,9 +3,9 @@ spring:
       dynamic:
         datasource:
           trader:
-            url: jdbc:sqlserver://52.82.105.72;DatabaseName=TradeOrder11
+            url: jdbc:sqlserver://10.101.10.21;DatabaseName=TradeOrder11
             username: sa
-            password: 4UHsIEHBinA9puEu
+            password: rg@ziguang888
             driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
           tradeFlow:
             url: jdbc:mysql://52.82.65.118/tradeFlow?useUnicode=true&characterEncoding=utf-8&autoReconnect=true
