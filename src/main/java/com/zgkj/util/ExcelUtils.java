@@ -1,4 +1,4 @@
-package com.util;
+package com.zgkj.util;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -16,7 +16,7 @@ import java.util.Map;
 public class ExcelUtils {
 
     /**
-     *
+     * 如果不能保证传入的数据每行长度都一样，请不要手动设置header，会出现不对应的情况
      * @param data 数据
      * @param header 标题，若空，则使用mapKey作为标题
      * @param filename 导出的名字
@@ -83,7 +83,7 @@ public class ExcelUtils {
                 sheet.setColumnWidth(i, 256 * 15);
             }
         }else {
-            Map<String,Object> map=data.get(0);
+            Map<String,Object> map=data.get(0).size()>data.get(3).size()?data.get(0):data.get(3);
             int j=0;
             for (Map.Entry<String,Object> entry:map.entrySet()){
                 rowHeader.createCell(j).setCellValue(entry.getKey());
@@ -108,7 +108,10 @@ public class ExcelUtils {
             XSSFRow rowData=sheet.createRow(i);
             int j=0;
             for (Map.Entry<String,Object> entry:dataMap.entrySet()){
-                rowData.createCell(j).setCellValue(String.valueOf(entry.getValue()));
+                while (!entry.getKey().equals(sheet.getRow(0).getCell(j).getRichStringCellValue().getString())&&null==header){
+                    j++;
+                }
+                rowData.createCell(j).setCellValue(String.valueOf(null==entry.getValue()?"无数据":entry.getValue()));
                 rowData.getCell(j).setCellStyle(cellStyle_row);
                 j++;
             }
@@ -144,9 +147,6 @@ public class ExcelUtils {
         return sb.toString();
     }
 
-    private void sheetData(XSSFSheet sheet){
-
-    }
 
     public static List<Map<String,Object>> importExcel(MultipartFile file,String[] mapKeys){
         XSSFWorkbook workbook=null;
@@ -159,8 +159,6 @@ public class ExcelUtils {
         XSSFSheet sheet = workbook.getSheetAt(0);
         // 获取该工作表的第一行
         XSSFRow row = null;
-        // 获取该工作表的第一个单元格
-        XSSFCell cell = null;
         // 存放excel的List
         List<Map<String,Object>> itemList=new ArrayList<>();
         for (int i = 0;i<=sheet.getLastRowNum(); i++) {

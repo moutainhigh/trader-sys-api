@@ -1,9 +1,9 @@
 package com.zgkj.api.trader.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.util.DateUtils;
-import com.util.ExcelUtils;
-import com.util.IPUtil;
+import com.zgkj.util.DateUtils;
+import com.zgkj.util.ExcelUtils;
+import com.zgkj.util.IPUtil;
 import com.zgkj.api.trader.entity.OrderExpressInfo;
 import com.zgkj.api.trader.entity.OrderRecord;
 import com.zgkj.api.trader.service.IOrderExpressInfoService;
@@ -108,7 +108,8 @@ public class OrderInfoController {
     @RequestMapping("scanToUpdateExp")
     public String scanToUpdateExp(String outId,String expNo,HttpServletRequest request){
         String result="";
-        expNo=expNo.substring(8);//去掉前八位
+        //去掉前八位
+        expNo=expNo.substring(8);
         outId=outId.replace("B","");
         String orderid=orderInfoService.getOrderIdWithOutboundId(outId);
         OrderExpressInfo expressInfo=new OrderExpressInfo();

@@ -1,4 +1,4 @@
-package com.util;
+package com.zgkj.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

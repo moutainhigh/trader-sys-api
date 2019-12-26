@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zgkj.api.trader.mapper.OutboundInfoMapper">
     <select id="getAllId" resultType="java.util.LinkedHashMap" >
-        SELECT OutboundInfo.OutboundGoodsID, ProEghName FROM OutboundInfo
+        SELECT OutboundInfo.OutboundGoodsID, ProEghName,OutboundInfo.ProductClass FROM OutboundInfo
         left join OrderInfo on OutboundInfo.SystemNumber=OrderInfo.SystemNumber
         left join ProductInfo on OutboundInfo.OutboundGoodsID=ProductInfo.ID
         WHERE OrderInfo.UserID=#{Uid} and OrderInfo.SaleDate >#{StartDate} and OrderInfo.SaleDate &lt; #{StopDate}
-        GROUP BY OutboundInfo.OutboundGoodsID,ProEghName
+        GROUP BY OutboundInfo.OutboundGoodsID,ProEghName,OutboundInfo.ProductClass
     </select>
 </mapper>

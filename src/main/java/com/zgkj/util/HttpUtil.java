@@ -1,4 +1,4 @@
-package com.util;
+package com.zgkj.util;
 
 
 import com.alibaba.fastjson.JSONObject;
@@ -12,6 +12,9 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 
+/**
+ * @author user
+ */
 @Slf4j
 public class HttpUtil {
 
@@ -54,7 +57,7 @@ public class HttpUtil {
                 result.append(line);
             }
         } catch (Exception e) {
-            log.error("发送GET请求出现异常！", e);
+            log.error("发送GET请求出现异常！"+e);
         }
         return result.toString();
     }

@@ -1,4 +1,4 @@
-package com.util;
+package com.zgkj.util;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;

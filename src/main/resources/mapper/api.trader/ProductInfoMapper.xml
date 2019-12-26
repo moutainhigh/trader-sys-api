@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgkj.api.trader.mapper.ProductInfoMapper">
+
+    <select id="getProductInfo" resultType="com.zgkj.api.trader.entity.ProductInfo">
+        SELECT * FROM ProductInfo a
+        left join ProductInfo_ass ass on a.id=ass.productInfoId
+        left join ProductClass p on a.ProClassID=p.ID
+        WHERE asinCode like #{sain}+'%'
+    </select>
+</mapper>

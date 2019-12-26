@@ -1,4 +1,4 @@
-package com.util;
+package com.zgkj.util;
 
 import com.zgkj.api.Auth.exception.ApiException;
 import io.jsonwebtoken.*;

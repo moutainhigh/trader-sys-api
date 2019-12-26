@@ -2,8 +2,8 @@ package com.zgkj.api.trader.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.util.DateUtils;
-import com.util.IPUtil;
+import com.zgkj.util.DateUtils;
+import com.zgkj.util.IPUtil;
 import com.zgkj.api.trader.entity.DictItem;
 import com.zgkj.api.trader.entity.OrderRecord;
 import com.zgkj.api.trader.entity.ProductClass;

@@ -4,25 +4,23 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import java.util.List;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
  * @author Lucent
- * @since 2019-11-06
+ * @since 2019-12-18
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("OrderInfo")
-public class OrderInfo implements Serializable {
+@TableName("PendingOrder")
+public class PendingOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -83,6 +81,9 @@ public class OrderInfo implements Serializable {
     @TableField("TheSingleCost")
     private String TheSingleCost;
 
+    @TableField("OrderFreight")
+    private String OrderFreight;
+
     @TableField("TheExpressNo")
     private String TheExpressNo;
 
@@ -131,71 +132,19 @@ public class OrderInfo implements Serializable {
     @TableField("IsProblem")
     private Integer IsProblem;
 
+    @TableField("ShopKey")
+    private String ShopKey;
+
     @TableField("AmazonUpdateDate")
     private String AmazonUpdateDate;
 
     @TableField("AmazonStatus")
     private String AmazonStatus;
 
-    /**
-     * 0、下单    1、已下单    2、制作完成   3、等待答复    4、二次制作   5、已完成
-     */
-    @TableField("Status")
-    private Integer Status;
-
-    @TableField("IsTwo")
-    private Integer IsTwo;
-
-    private Integer importwaybill;
-
-    @TableField("MarketplaceId")
-    private String MarketplaceId;
-
-    @TableField("downPdf")
-    private Integer downPdf;
-
-    private Integer expressage;
-
-    @TableField("TypeOfShipping")
-    private String TypeOfShipping;
-
-    @TableField("isExpress")
-    private Integer isExpress;
-
-    @TableField("OrderIdSer")
-    private Integer OrderIdSer;
-
-    @TableField("expressNoSer")
-    private Integer expressNoSer;
-
-    @TableField("deliveryTime")
-    private String deliveryTime;
-
-    @TableField("amazonCanceledTime")
-    private String amazonCanceledTime;
-
-    @TableField("amazonShippedTime")
-    private String amazonShippedTime;
-
     @TableField("CurrencyCode")
     private String CurrencyCode;
 
-    @TableField("isMerge")
-    private Integer isMerge;
-
-    @TableField("ToDrawingDate")
-    private String ToDrawingDate;
-
     private String platform;
-
-    @TableField("drawingOverDate")
-    private String drawingOverDate;
-
-    @TableField("picMergeDate")
-    private String picMergeDate;
-
-    @TableField("WareHouseID")
-    private Integer WareHouseID;
 
     @TableField("ExternalTransactionID")
     private String ExternalTransactionID;
@@ -215,29 +164,8 @@ public class OrderInfo implements Serializable {
     @TableField("FulfillmentChannel")
     private String FulfillmentChannel;
 
-    @TableField("InOdoo")
-    private Integer InOdoo;
-
     @TableField("PurchaseDate")
     private String PurchaseDate;
-
-    private String accountedTime;
-
-    private Integer virtualOverseasWarehouse;
-
-    private Integer urgent;
-
-    private Integer state;
-
-    private Integer agent;
-
-    private Float agentAmount;
-
-    @TableField(exist = false)
-    private List<OutboundInfo> outboundInfos;
-
-    @TableField(exist = false)
-    private OrderInfoMemo memo;
 
 
 }

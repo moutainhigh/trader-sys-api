@@ -1,4 +1,4 @@
-package com.util;
+package com.zgkj.util;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.security.NullPermission;

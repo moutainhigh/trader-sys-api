@@ -1,4 +1,4 @@
-package com.util;
+package com.zgkj.util;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.Character.UnicodeBlock;

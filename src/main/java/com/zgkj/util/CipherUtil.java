@@ -1,6 +1,5 @@
-package com.util;
+package com.zgkj.util;
 
-import com.util.TranscodeUtil;
 import sun.misc.BASE64Encoder;
 
 import javax.crypto.*;

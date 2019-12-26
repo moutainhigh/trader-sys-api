@@ -8,8 +8,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * @author user
+ */
 @SpringBootApplication
+@EnableTransactionManagement
 @MapperScan(basePackages = "com.zgkj.api.trader.mapper")
 @MapperScan(basePackages = "com.zgkj.api.tradeFlow.mapper")
 public class ApiApplication {

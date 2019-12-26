@@ -1,6 +1,6 @@
 package com.zgkj.api.trader.controller;
 
-import com.util.JwtUtil;
+import com.zgkj.util.JwtUtil;
 import com.zgkj.api.Auth.exception.ApiException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

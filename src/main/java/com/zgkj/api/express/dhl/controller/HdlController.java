@@ -2,7 +2,7 @@ package com.zgkj.api.express.dhl.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.util.*;
+import com.zgkj.util.*;
 import com.zgkj.api.express.dhl.dhlEntity.PdfInfo;
 import com.zgkj.api.express.dhl.dhlEntity.request.*;
 import com.zgkj.api.express.dhl.dhlEntity.response.HdlResultBean;

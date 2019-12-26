@@ -2,7 +2,7 @@ package com.zgkj.api.trader.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.util.CipherUtil;
+import com.zgkj.util.CipherUtil;
 import com.zgkj.api.Auth.exception.ServerErrorException;
 import com.zgkj.api.trader.entity.UserInfo;
 import com.zgkj.api.trader.service.IOrderInfoService;

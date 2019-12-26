@@ -1,6 +1,6 @@
 package com.zgkj.api.Auth.interceptor;
 
-import com.util.JwtUtil;
+import com.zgkj.util.JwtUtil;
 import com.zgkj.api.Auth.exception.ApiException;
 import io.jsonwebtoken.Claims;
 import org.springframework.web.servlet.HandlerInterceptor;

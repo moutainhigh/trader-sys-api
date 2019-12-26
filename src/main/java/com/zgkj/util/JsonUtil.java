@@ -1,9 +1,9 @@
-package com.util;
+package com.zgkj.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonUtil {
-    /*
+    /**
      * 001.json转换成对象
      * @param:传入对象，json字符串
      * @return:Object
@@ -17,7 +17,7 @@ public class JsonUtil {
         }
         return obj;
     }
-    /*
+    /**
      * 002.对象转换成json
      * @param:传入对象
      * @return:json字符串
