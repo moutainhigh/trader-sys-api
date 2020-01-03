@@ -36,6 +36,12 @@ public class DateUtils {
         simpleDateFormat.setTimeZone(timeZone);
         return LocalDateTime.parse(simpleDateFormat.format(new Date()), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).plusDays(days)+"GMT+08:00";
     }
+    public static String getGMTDateTimeNow(){
+        TimeZone timeZone = TimeZone.getTimeZone("GMT+8:00");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        simpleDateFormat.setTimeZone(timeZone);
+        return LocalDateTime.parse(simpleDateFormat.format(new Date()), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))+"+08:00";
+    }
     public static String getSystemNumber(){
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmssSSss");
         String str = df.format(new Date());

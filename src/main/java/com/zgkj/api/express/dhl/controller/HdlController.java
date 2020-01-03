@@ -8,6 +8,7 @@ import com.zgkj.api.express.dhl.dhlEntity.request.*;
 import com.zgkj.api.express.dhl.dhlEntity.response.HdlResultBean;
 import com.zgkj.api.trader.entity.*;
 import com.zgkj.api.trader.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import java.util.List;
 /**
  * @author user
  */
+@Slf4j
 @RestController
 @RequestMapping("hdl")
 public class HdlController {
@@ -30,8 +32,8 @@ public class HdlController {
     private static final String PASSWORD="O$3lH$2aR!6n";
     private static final String SHIPPER_ACCOUNT_NUMBER="604743457";
     private static final String QUANTITY_UNIT_OF_MEASUREMENT="PCS";
-    private static final String PDF_SAVE_API="http://localhost:8080/NewTO/SavePDF.jsp";
-    private static final String HDL_API_URL="https://wsbexpress.dhl.com:443/sndpt/expressRateBook";
+    private static final String PDF_SAVE_API="http://161.189.12.212:8012/NewTO/SavePDF.jsp";
+    private static final String HDL_API_URL="https://wsbexpress.dhl.com/gbl/expressRateBook";
     private static final String XML_HEADER="<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ship=\"http://scxgxtt.phx-dc.dhl.com/euExpressRateBook/ShipmentMsgRequest\">\n" +
             "   <soapenv:Header>\n" +
             "   \t\t<wsse:Security soapenv:mustUnderstand=\"1\" xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">\n" +
@@ -54,7 +56,6 @@ public class HdlController {
     IOrderExpressInfoService orderExpressInfoService;
     @Autowired
     IOrderRecordService orderRecordService;
-
 
     @ResponseBody
     @RequestMapping("makeExpress")
@@ -86,34 +87,35 @@ public class HdlController {
                 priceAll+=pr*exportLineItem.getQuantity();
                 Double we=Double.valueOf(weightEach)/exportLineItem.getQuantity();
                 DecimalFormat df   = new DecimalFormat("######0.00");
-                exportLineItem.setNetWeight(Double.valueOf(df.format(we)));
-                exportLineItem.setGrossWeight(Double.valueOf(df.format(we)));
+                Double value=0.1;
+                if (Double.valueOf(df.format(we))!=0.00){
+                    value = Double.valueOf(df.format(we));
+                }
+                exportLineItem.setNetWeight(value);
+                exportLineItem.setGrossWeight(value);
                 exportLineItems.add(exportLineItem);
             }
-
             String xml=XML_HEADER;
             RequestedShipment requestedShipment=new RequestedShipment();
-
             requestedShipment.setShipmentInfo(setShipmentInfo(orderId));
             requestedShipment.setShipTimestamp(DateUtils.getGMTDateTimeLater(1));
             requestedShipment.setPaymentInfo("DAP");
             requestedShipment.setInternationalDetail(setInternationalDetail(orderInfo.getId().toString(),exportLineItems,priceAll));
-
             Ship ship=new Ship();
             ship.setShipper(setShipper());
             ship.setRecipient(setRecipient(orderInfo));
             requestedShipment.setShip(ship);
             requestedShipment.setPackages(setPackages(orderId,weight,length,width,height));
-
             ShipmentRequest shipmentRequest=new ShipmentRequest();
+            Request request1=makeRequest();
+            shipmentRequest.setRequest(request1);
             shipmentRequest.setRequestedShipment(requestedShipment);
             Body body=new Body();
             body.setShipmentRequest(shipmentRequest);
             xml+= XsteamUtil.toXml(body,"number","number",RequestedPackages.class)+"\n</soapenv:Envelope>";
-            //System.out.println(xml);
+            //log.info("请求:"+xml);
             String result=HttpUtil.sendXmlPost(HDL_API_URL,xml);
             HdlResultBean bean= (HdlResultBean) XsteamUtil.toModel(result,HdlResultBean.class);
-
             try {
                 PdfInfo pdfInfo=new PdfInfo();
                 pdfInfo.setGraphicImage(bean.getBody().getShipmentResponse().getLabelImage().getGraphicImage());
@@ -157,9 +159,10 @@ public class HdlController {
                     return "failed";
                 }
             }catch (Exception e){
-                e.printStackTrace();
-                System.out.println("----------------------------返回错误,请求如下-------------------------");
-                System.out.println(xml);
+                log.error("----------------------------返回错误,请求如下-------------------------");
+                log.error(xml);
+                log.error("----------------------------返回错误,结果如下-------------------------");
+                log.info("结果:"+result);
                 return "failed";
             }
 
@@ -245,7 +248,25 @@ public class HdlController {
         recipient.setContact(contact);
 
         Address address=new Address();
-        address.setStreetLines(orderInfo.getAddress());
+        if (orderInfo.getAddress().length()>45){
+            String[] addr=orderInfo.getAddress().split(" ");
+            Integer size=addr.length;
+            String add1="";
+            String add2="";
+            for (int i =0;i<size;i++){
+                if ((add1+addr[i]+" ").length()<45){
+                    add1+=addr[i]+" ";
+                }else {
+                    add2+=addr[i]+" ";
+                }
+            }
+            address.setStreetLines(add1);
+            if (!"".equals(add2)){
+                address.setStreetLines2(add2);
+            }
+        }else {
+            address.setStreetLines(orderInfo.getAddress());
+        }
         address.setCity(orderInfo.getCity());
         address.setPostalCode(orderInfo.getZipCode());
         QueryWrapper<RegionInfo> wrapper=new QueryWrapper<>();
@@ -261,14 +282,27 @@ public class HdlController {
         requestedPackages.setWeight(weight+"");
         requestedPackages.setCustomerReferences(orderId);
         Dimensions dimensions=new Dimensions();
-        dimensions.setLength(length);
-        dimensions.setWidth(width);
-        dimensions.setHeight(height);
+        dimensions.setLength(length<0.5?0.5:length);
+        dimensions.setWidth(width<0.5?0.5:width);
+        dimensions.setHeight(height<0.5?0.5:height);
         requestedPackages.setDimensions(dimensions);
         requestedPackages.setNumber(1);
         List<RequestedPackages> list=new ArrayList<>();
         list.add(requestedPackages);
         packages.setRequestedPackages(list);
         return packages;
+    }
+
+    private Request makeRequest(){
+        Request request=new Request();
+        ServiceHeader serviceHeader=new ServiceHeader();
+        serviceHeader.setMessageTime(DateUtils.getGMTDateTimeNow());
+        serviceHeader.setMessageReference(RandomCodeUtil.getRandomString(30));
+        serviceHeader.setWebstorePlatform("Amzaone");
+        serviceHeader.setWebstorePlatformVersion("1");
+        serviceHeader.setShippingSystemPlatform("ZiGuangExpressSys");
+        serviceHeader.setShippingSystemPlatformVersion("1");
+        request.setServiceHeader(serviceHeader);
+        return request;
     }
 }
