@@ -121,39 +121,13 @@ public class HdlController {
                 pdfInfo.setGraphicImage(bean.getBody().getShipmentResponse().getLabelImage().getGraphicImage());
                 pdfInfo.setDocumentImage(bean.getBody().getShipmentResponse().getDocuments().get(0).getDocumentImage());
                 pdfInfo.setTrackingNumber(bean.getBody().getShipmentResponse().getPackagesResult().getPackageResult().get(0).getTrackingNumber());
-                String re= HttpUtil.sendJsonPost(PDF_SAVE_API, JSON.parseObject(JsonUtil.objToJson(pdfInfo)));
+                String re= HttpUtil.sendJsonPost(PDF_SAVE_API, JSON.parseObject(JsonUtil.objToJson(pdfInfo)),null);
                 if (SUCCESS.equals(re)){
-                    QueryWrapper<OrderExpressInfo> orderExpressInfoQueryWrapper=new QueryWrapper<>();
-                    orderExpressInfoQueryWrapper.eq("OrderID",orderId);
-                    OrderExpressInfo orderExpressInfo=orderExpressInfoService.getOne(orderExpressInfoQueryWrapper);
-                    Boolean flag=false;
-                    if (null!=orderExpressInfo){
-                        orderExpressInfo.setTheExpressNo(pdfInfo.getTrackingNumber());
-                        orderExpressInfo.setExpressage(22);
-                        orderExpressInfo.setTypeOfShipping("DHL");
-                        orderExpressInfo.setCreateDate(DateUtils.getTimeNow());
-                        flag= orderExpressInfoService.update(orderExpressInfo,orderExpressInfoQueryWrapper);
-                    }else {
-                        orderExpressInfo=new OrderExpressInfo();
-                        orderExpressInfo.setTheExpressNo(pdfInfo.getTrackingNumber());
-                        orderExpressInfo.setExpressage(22);
-                        orderExpressInfo.setTypeOfShipping("DHL");
-                        orderExpressInfo.setOrderID(orderId);
-                        orderExpressInfo.setCreateDate(DateUtils.getTimeNow());
-                        flag= orderExpressInfoService.save(orderExpressInfo);
-                    }
-                    OrderRecord orderRecord=new OrderRecord();
-                    orderRecord.setUserID(userId);
-                    orderRecord.setOrderID(orderId);
-                    orderRecord.setOperateContent("将运单号修改为: "+pdfInfo.getTrackingNumber());
-                    orderRecord.setIp(IPUtil.getClientIP(request));
-                    orderRecord.setStatus(0);
-                    orderRecord.setCreateDate(DateUtils.getTimeNow());
-                    orderRecordService.save(orderRecord);
-                    if (!flag){
-                        return "failed";
-                    }
-                    return "success";
+                    Boolean flag=orderExpressInfoService.changeExpress(orderId,pdfInfo.getTrackingNumber(),"DHL",22,userId,request);
+                if (!flag){
+                    return "failed";
+                }
+                return "success";
                 }else {
 
                     return "failed";
@@ -254,7 +228,7 @@ public class HdlController {
             String add1="";
             String add2="";
             for (int i =0;i<size;i++){
-                if ((add1+addr[i]+" ").length()<45){
+                if ((add1+addr[i]+" ").length()<45&&"".equals(add2)){
                     add1+=addr[i]+" ";
                 }else {
                     add2+=addr[i]+" ";

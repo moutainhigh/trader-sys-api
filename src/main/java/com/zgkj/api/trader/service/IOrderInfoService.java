@@ -1,6 +1,6 @@
 package com.zgkj.api.trader.service;
 
-import com.zgkj.api.express.aliExpress.entity.Order;
+import com.zgkj.api.shops.aliExpress.entity.Order;
 import com.zgkj.api.trader.entity.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zgkj.api.trader.entity.ShopConfig;

@@ -1,4 +1,4 @@
-package com.zgkj.api.express.aliExpress.entity;
+package com.zgkj.api.shops.aliExpress.entity;
 
 import lombok.Data;
 

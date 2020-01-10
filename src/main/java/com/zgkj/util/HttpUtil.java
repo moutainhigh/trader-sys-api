@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
+import java.util.Map;
 
 /**
  * @author user
@@ -180,7 +181,7 @@ public class HttpUtil {
      *            请求参数，请求参数应该是 json 的形式。
      * @return 所代表远程资源的响应结果
      */
-    public static String sendJsonPost(String url, JSONObject json) {
+    public static String sendJsonPost(String url, JSONObject json, Map<String,String> authMap) {
         PrintWriter out = null;
         BufferedReader in = null;
         String result = "";
@@ -193,6 +194,11 @@ public class HttpUtil {
             conn.setRequestProperty("connection", "Keep-Alive");
             conn.setRequestProperty("user-agent",
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            if (authMap!=null){
+                conn.setRequestProperty("Username",authMap.get("Username"));
+                conn.setRequestProperty("Password",authMap.get("Password"));
+                conn.setRequestProperty("AccessLicenseNumber",authMap.get("AccessLicenseNumber"));
+            }
             // 发送POST请求必须设置如下两行
             conn.setDoOutput(true);
             conn.setDoInput(true);
