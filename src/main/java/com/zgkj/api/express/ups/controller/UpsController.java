@@ -82,7 +82,7 @@ public class UpsController {
                 service.setCode("M4");
                 shipment.setUSPSEndorsement("1");
                 shipment.setPackageID(orderId.replace("-",""));
-                shipment.setCostCenter("1234567");
+                shipment.setCostCenter(orderInfo.getId().toString());
             }else if (1<=weight&&weight<=9){
                 service.setCode("93");
             }else {
@@ -153,8 +153,8 @@ public class UpsController {
     }
     private Shipper makeShipper(){
         Shipper shipper=new Shipper();
-        shipper.setName("QUANCHAI CHEN");
-        shipper.setAttentionName("QUANCHAI CHEN");
+        shipper.setName("ZiXun Tech");
+        shipper.setAttentionName("ZiXun Tech");
         shipper.setShipperNumber("7AW697");
         Phone phone=new Phone();
         phone.setNumber("+86 18950099841");
