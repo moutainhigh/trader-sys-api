@@ -3,6 +3,8 @@ package com.zgkj.api.express.ups.entity.response;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @Author: Lucent
  * @Date: 2020/1/6 15:25
@@ -14,5 +16,5 @@ public class Response {
     @JSONField(name = "ResponseStatus")
     private ResponseStatus ResponseStatus;
     @JSONField(name = "Alert")
-    private Alert Alert;
+    private List<Alert> Alert;
 }

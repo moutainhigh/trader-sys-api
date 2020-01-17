@@ -40,8 +40,8 @@ public class UpsController {
     private final static String ACCESS_LICENSE_NUMBER="ED72F766E6935ED2";
     private final static String REQUEST_OPTION="nonvalidate";
     private final static String SUBVERSION="1807";
-    private final static String UPS_API="https://wwwcie.ups.com/ship/1807/shipments";
-    private static final String PDF_SAVE_API="http://localhost:8080/NewTO/SavePDF.jsp";
+    private final static String UPS_API="https://onlinetools.ups.com/ship/1807/shipments";
+    private static final String PDF_SAVE_API="http://161.189.12.212:8012/NewTO/SavePDF.jsp";
     private static final String SUCCESS="success";
 
     @Autowired
@@ -105,10 +105,11 @@ public class UpsController {
             upsRequestBody.setUPSSecurity(upsSecurity);
             upsRequestBody.setShipmentRequest(shipmentRequest);
             String json=JSONObject.toJSON(upsRequestBody).toString();
-            JSONObject jsonObject=JSON.parseObject(json);
-            String result=HttpUtil.sendJsonPost(UPS_API,jsonObject,authMap);
-            UpsResponseBody upsResponseBody= JSON.parseObject(result,UpsResponseBody.class);
+            String result="";
             try {
+                JSONObject jsonObject=JSON.parseObject(json);
+                result=HttpUtil.sendJsonPost(UPS_API,jsonObject,authMap);
+                UpsResponseBody upsResponseBody= JSON.parseObject(result,UpsResponseBody.class);
                 PdfInfo pdfInfo=new PdfInfo();
                 pdfInfo.setTrackingNumber(upsResponseBody.getShipmentResponse().getShipmentResults().getPackageResults().getTrackingNumber());
                 pdfInfo.setGraphicImage(upsResponseBody.getShipmentResponse().getShipmentResults().getPackageResults().getShippingLabel().getGraphicImage());
@@ -125,7 +126,8 @@ public class UpsController {
                 log.error("----------------------------返回错误,请求如下-------------------------");
                 log.error(json);
                 log.error("----------------------------返回错误,结果如下-------------------------");
-                log.info("结果:"+result);
+                log.error("结果:"+result);
+                e.printStackTrace();
                 return "failed";
             }
         }else {
