@@ -15,4 +15,6 @@ public class PackageResults {
     private String TrackingNumber;
     @JSONField(name = "ShippingLabel")
     private ShippingLabel ShippingLabel;
+    @JSONField(name = "USPSPICNumber")
+    private String USPSPICNumber;
 }

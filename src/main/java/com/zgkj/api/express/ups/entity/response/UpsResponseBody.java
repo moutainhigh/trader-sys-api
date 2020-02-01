@@ -11,4 +11,6 @@ import lombok.Data;
 public class UpsResponseBody {
     @JSONField(name = "ShipmentResponse")
     private ShipmentResponse ShipmentResponse;
+    @JSONField(name = "response")
+    private Response response;
 }

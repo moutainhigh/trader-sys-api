@@ -40,8 +40,16 @@ public class UpsController {
     private final static String ACCESS_LICENSE_NUMBER="ED72F766E6935ED2";
     private final static String REQUEST_OPTION="nonvalidate";
     private final static String SUBVERSION="1807";
-    private final static String UPS_API="https://onlinetools.ups.com/ship/1807/shipments";
-    private static final String PDF_SAVE_API="http://161.189.12.212:8012/NewTO/SavePDF.jsp";
+    /**
+     * 测试环境: https://wwwcie.ups.com/ship/1807/shipments
+     * 正式环境: https://onlinetools.ups.com/ship/1807/shipments
+     */
+    private final static String UPS_API="https://wwwcie.ups.com/ship/1807/shipments";
+    /**
+     * 正式：http://161.189.12.212:8012/NewTO/SavePDF.jsp
+     * 测试：http://localhost:8080/NewTO/SavePDF.jsp
+     */
+    private static final String PDF_SAVE_API="http://localhost:8080/NewTO/SavePDF.jsp";
     private static final String SUCCESS="success";
 
     @Autowired
@@ -111,16 +119,31 @@ public class UpsController {
                 result=HttpUtil.sendJsonPost(UPS_API,jsonObject,authMap);
                 UpsResponseBody upsResponseBody= JSON.parseObject(result,UpsResponseBody.class);
                 PdfInfo pdfInfo=new PdfInfo();
-                pdfInfo.setTrackingNumber(upsResponseBody.getShipmentResponse().getShipmentResults().getPackageResults().getTrackingNumber());
+                String trackingNum="";
+                String ShipType="";
+                if (null!=upsResponseBody.getResponse()&&!"".equals(upsResponseBody.getResponse())){
+                    return upsResponseBody.getResponse().getErrors().get(0).getMessage();
+                }
+                if (weight<1){
+                    ShipType="UPS-Mail Innovation";
+                    trackingNum=upsResponseBody.getShipmentResponse().getShipmentResults().getPackageResults().getUSPSPICNumber();
+                }else if (1<=weight&&weight<=9){
+                    ShipType="UPS-SurePost";
+                    trackingNum=upsResponseBody.getShipmentResponse().getShipmentResults().getPackageResults().getTrackingNumber();
+                }else {
+                    ShipType="UPS-Ground";
+                    trackingNum=upsResponseBody.getShipmentResponse().getShipmentResults().getPackageResults().getTrackingNumber();
+                }
+                pdfInfo.setTrackingNumber(trackingNum);
                 pdfInfo.setGraphicImage(upsResponseBody.getShipmentResponse().getShipmentResults().getPackageResults().getShippingLabel().getGraphicImage());
                 String re= HttpUtil.sendJsonPost(PDF_SAVE_API, JSON.parseObject(JsonUtil.objToJson(pdfInfo)),null);
                 if (SUCCESS.equals(re)){
-                    Boolean flag=orderExpressInfoService.changeExpress(orderId,pdfInfo.getTrackingNumber(),"UPS",20,userId,request);
+                    Boolean flag=orderExpressInfoService.changeExpress(orderId,trackingNum,ShipType,20,userId,request);
                     if (!flag){
-                        return "failed";
+                        return "save ExpressInfo failed";
                     }
                 }else {
-                    return "failed";
+                    return "save PDF failed";
                 }
             }catch (Exception e){
                 log.error("----------------------------返回错误,请求如下-------------------------");

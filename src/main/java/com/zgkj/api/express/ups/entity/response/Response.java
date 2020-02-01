@@ -17,4 +17,6 @@ public class Response {
     private ResponseStatus ResponseStatus;
     @JSONField(name = "Alert")
     private List<Alert> Alert;
+    @JSONField(name = "errors")
+    private List<Error> errors;
 }
