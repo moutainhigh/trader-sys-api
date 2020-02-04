@@ -8,7 +8,7 @@ spring:
             password: rg@ziguang888
             driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
           tradeFlow:
-            url: jdbc:mysql://52.82.65.118/tradeFlow?useUnicode=true&characterEncoding=utf-8&autoReconnect=true
+            url: jdbc:mysql://127.0.0.1/tradeFlow?useUnicode=true&characterEncoding=utf-8&autoReconnect=true
             username: root
             password: ziguang@888
             driver-class-name: com.mysql.jdbc.Driver
